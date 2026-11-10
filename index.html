@@ -34,9 +34,12 @@
     </script>
     <style>
         html, body {
-            max-width: 100%;
+            max-width: 100vw;
             overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
+            -webkit-tap-highlight-color: transparent;
+        }
+        * {
+            box-sizing: border-box;
         }
         .text-glow-amber {
             text-shadow: 0 0 18px rgba(238, 155, 0, 0.45), 0 0 4px rgba(202, 103, 2, 0.6);
@@ -46,22 +49,28 @@
         }
         @media print {
             body { background: #ffffff !important; color: #001219 !important; }
-            header, #toast, .no-print { display: none !important; }
+            header, #toast, #back-to-top, .no-print { display: none !important; }
             .card-night-market { background: #ffffff !important; border: 1px solid #cbd5e1 !important; break-inside: avoid; }
         }
     </style>
 </head>
-<body class="bg-[#F4F7F8] text-[#001219] dark:bg-abyss dark:text-slate-100 transition-colors duration-200">
+<body class="bg-[#F4F7F8] text-[#001219] dark:bg-abyss dark:text-slate-100 transition-colors duration-200 antialiased">
 
     <!-- Toast de Cópia -->
-    <div id="toast" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-center sm:justify-start gap-2 bg-abyss dark:bg-lagoon text-white border border-goldglow/50 px-4 py-3 rounded-xl shadow-amber-glow font-medium text-sm">
+    <div id="toast" class="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-center sm:justify-start gap-2 bg-abyss dark:bg-lagoon text-white border border-goldglow/60 px-4 py-3 rounded-xl shadow-amber-glow font-medium text-sm">
         <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0 text-goldglow dark:text-abyss"></i>
         <span id="toast-msg" class="truncate">Copiado!</span>
     </div>
 
+    <!-- Botão Voltar ao Topo (Mobile) -->
+    <button type="button" id="back-to-top" aria-label="Voltar ao topo"
+        class="fixed bottom-4 right-3 z-40 sm:hidden opacity-0 pointer-events-none transition-all duration-300 w-11 h-11 rounded-full bg-goldglow text-abyss shadow-amber-glow flex items-center justify-center border border-abyss/20">
+        <i data-lucide="arrow-up" class="w-5 h-5"></i>
+    </button>
+
     <!-- Cabeçalho Alinhado -->
-    <header class="relative w-full bg-white dark:bg-abyss border-b border-deepsea/20 dark:border-deepsea/60">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+    <header class="w-full bg-white dark:bg-abyss border-b border-deepsea/20 dark:border-deepsea/60">
+        <div class="max-w-6xl mx-auto px-3.5 sm:px-6 py-4 sm:py-5">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left">
                 <!-- Título e Subtítulo -->
                 <div class="flex items-center justify-center sm:justify-start gap-3">
@@ -69,7 +78,7 @@
                         <i data-lucide="terminal" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-deepsea dark:text-goldglow dark:text-glow-amber">
+                        <h1 class="text-lg sm:text-2xl font-extrabold uppercase tracking-tight text-deepsea dark:text-goldglow dark:text-glow-amber leading-tight">
                             Diagnóstico de Rede
                         </h1>
                         <p class="text-xs font-medium text-rust dark:text-lagoon mt-0.5">
@@ -80,11 +89,11 @@
 
                 <!-- Controles Rápidos -->
                 <div class="flex items-center justify-center gap-2 no-print">
-                    <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-lagoon border border-deepsea/20 dark:border-deepsea text-xs font-semibold hover:border-goldglow transition">
+                    <button type="button" onclick="window.print()" class="min-h-[40px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-lagoon border border-deepsea/20 dark:border-deepsea text-xs font-semibold hover:border-goldglow transition">
                         <i data-lucide="printer" class="w-4 h-4"></i>
                         <span>PDF / Imprimir</span>
                     </button>
-                    <button type="button" id="theme-toggle" aria-label="Alternar tema" class="p-2 rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-goldglow border border-deepsea/20 dark:border-deepsea hover:border-goldglow transition">
+                    <button type="button" id="theme-toggle" aria-label="Alternar tema" class="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-goldglow border border-deepsea/20 dark:border-deepsea hover:border-goldglow transition">
                         <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
                         <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
                     </button>
@@ -92,16 +101,16 @@
             </div>
 
             <!-- Menu Principal por Abas -->
-            <nav class="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center sm:justify-start gap-2 mt-4 pt-4 border-t border-deepsea/10 dark:border-deepsea/40 no-print">
-                <button type="button" data-tab="tab-comandos" class="tab-btn active inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-goldglow text-abyss shadow-amber-glow transition">
+            <nav class="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2 mt-4 pt-3.5 border-t border-deepsea/10 dark:border-deepsea/40 no-print">
+                <button type="button" data-tab="tab-comandos" class="tab-btn active min-h-[42px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2 rounded-xl text-[11px] sm:text-sm font-bold bg-goldglow text-abyss shadow-amber-glow transition">
                     <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 hidden sm:inline"></i>
                     <span>Comandos</span>
                 </button>
-                <button type="button" data-tab="tab-checklist" class="tab-btn inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
+                <button type="button" data-tab="tab-checklist" class="tab-btn min-h-[42px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2 rounded-xl text-[11px] sm:text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
                     <i data-lucide="list-checks" class="w-4 h-4 shrink-0 hidden sm:inline"></i>
                     <span>Passo a Passo</span>
                 </button>
-                <button type="button" data-tab="tab-tabela" class="tab-btn inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
+                <button type="button" data-tab="tab-tabela" class="tab-btn min-h-[42px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2 rounded-xl text-[11px] sm:text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
                     <i data-lucide="arrow-left-right" class="w-4 h-4 shrink-0 hidden sm:inline"></i>
                     <span>Tabela</span>
                 </button>
@@ -110,7 +119,7 @@
     </header>
 
     <!-- Conteúdo Principal -->
-    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-6">
+    <main class="max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-6">
 
         <!-- ========================================================= -->
         <!-- ABA 1: LISTA DE COMANDOS                                  -->
@@ -118,50 +127,50 @@
         <section id="tab-comandos" class="tab-panel block">
             
             <!-- Barra de Busca + Filtro Único por Sistema -->
-            <div class="bg-white dark:bg-[#001D27] p-4 rounded-2xl border border-deepsea/20 dark:border-deepsea/70 mb-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5 no-print">
-                <!-- Busca -->
+            <div class="bg-white dark:bg-[#001D27] p-3.5 sm:p-4 rounded-2xl border border-deepsea/20 dark:border-deepsea/70 mb-4 sm:mb-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 no-print">
+                <!-- Busca (text-base evita zoom automático no iOS/Android) -->
                 <div class="relative w-full lg:w-80 shrink-0">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-deepsea dark:text-lagoon"></i>
-                    <input type="text" id="search-input" placeholder="Buscar comando (ex: ping, dns, porta)..." 
-                        class="w-full pl-10 pr-8 py-2.5 text-sm bg-slate-100 dark:bg-abyss border border-deepsea/20 dark:border-deepsea focus:border-goldglow rounded-xl outline-none text-abyss dark:text-white placeholder-slate-400">
-                    <button type="button" id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-goldglow">
+                    <input type="text" id="search-input" placeholder="Buscar comando, porta ou função..." 
+                        class="w-full min-h-[44px] pl-10 pr-9 py-2.5 text-base sm:text-sm bg-slate-100 dark:bg-abyss border border-deepsea/20 dark:border-deepsea focus:border-goldglow rounded-xl outline-none text-abyss dark:text-white placeholder-slate-400">
+                    <button type="button" id="clear-search" aria-label="Limpar busca" class="hidden absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-goldglow">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
 
-                <!-- Filtro Simples por Sistema -->
-                <div class="flex flex-wrap items-center justify-center lg:justify-end gap-1.5" id="system-filters">
-                    <button type="button" data-filter="all" class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-deepsea text-white dark:bg-lagoon dark:text-abyss transition">
-                        Todos
+                <!-- Filtro Simples por Sistema (Grid 2 colunas no mobile para toque confortável) -->
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center lg:justify-end gap-1.5" id="system-filters">
+                    <button type="button" data-filter="all" class="filter-btn active min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-bold bg-deepsea text-white dark:bg-lagoon dark:text-abyss transition">
+                        Todos (39)
                     </button>
-                    <button type="button" data-filter="nivel1" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
-                        Essenciais (Win)
+                    <button type="button" data-filter="nivel1" class="filter-btn min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                        Essenciais
                     </button>
-                    <button type="button" data-filter="nivel2-cmd" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                    <button type="button" data-filter="nivel2-cmd" class="filter-btn min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
                         Windows CMD
                     </button>
-                    <button type="button" data-filter="nivel2-ps" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                    <button type="button" data-filter="nivel2-ps" class="filter-btn min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
                         PowerShell
                     </button>
-                    <button type="button" data-filter="nivel2-linux" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                    <button type="button" data-filter="nivel2-linux" class="filter-btn min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
                         Linux
                     </button>
-                    <button type="button" data-filter="admin" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rust/15 dark:bg-rust/25 text-rust dark:text-goldglow border border-rust/40 hover:border-goldglow transition">
+                    <button type="button" data-filter="admin" class="filter-btn min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-rust/15 dark:bg-rust/25 text-rust dark:text-goldglow border border-rust/40 hover:border-goldglow transition">
                         Admin / Root
                     </button>
                 </div>
             </div>
 
             <!-- Contador Alinhado -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left mb-4 px-1">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left mb-3.5 px-1">
                 <p id="results-count" class="text-xs font-semibold uppercase tracking-wider text-deepsea dark:text-lagoon">
                     Exibindo 39 comandos
                 </p>
-                <span class="text-xs text-slate-500 dark:text-slate-400">Clique em qualquer exemplo para copiar</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400">Toque em qualquer exemplo para copiar</span>
             </div>
 
-            <!-- Grid de Comandos -->
-            <div id="commands-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+            <!-- Grid de Comandos (min-w-0 evita estouro lateral no mobile) -->
+            <div id="commands-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch">
                 <!-- Preenchido via JS -->
             </div>
 
@@ -631,9 +640,9 @@
             grid.innerHTML = filtered.map(cmd => {
                 const style = colorStyles[cmd.color] || colorStyles.blue;
                 return `
-                <article class="card-night-market h-full flex flex-col bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 border-t-4 ${style.border} shadow-sm hover:border-lagoon transition overflow-hidden">
-                    <div class="p-5 pb-3">
-                        <div class="flex items-center justify-between gap-2 mb-2">
+                <article class="card-night-market min-w-0 w-full h-full flex flex-col bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 border-t-4 ${style.border} shadow-sm hover:border-lagoon transition overflow-hidden">
+                    <div class="p-4 sm:p-5 pb-3">
+                        <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2">
                             <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase ${style.badge}">
                                 ${escapeHtml(cmd.categoryLabel)}
                             </span>
@@ -648,35 +657,35 @@
                         </h3>
                     </div>
 
-                    <div class="px-5 flex-grow flex flex-col gap-3.5">
-                        <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                    <div class="px-4 sm:px-5 flex-grow flex flex-col gap-3.5 min-w-0">
+                        <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed break-words">
                             ${escapeHtml(cmd.whatItDoes)}
                         </p>
 
-                        <div>
+                        <div class="min-w-0">
                             <span class="block text-[11px] font-bold uppercase tracking-wider text-deepsea/70 dark:text-lagoon mb-1">Sintaxe</span>
-                            <div class="bg-slate-100 dark:bg-abyss rounded-xl p-2.5 border border-deepsea/15 dark:border-deepsea/70 space-y-1 overflow-x-auto">
-                                ${cmd.syntax.map(line => `<div class="font-mono text-xs text-deepsea dark:text-slate-200 whitespace-pre">${escapeHtml(line)}</div>`).join('')}
+                            <div class="bg-slate-100 dark:bg-abyss rounded-xl p-2.5 border border-deepsea/15 dark:border-deepsea/70 space-y-1.5">
+                                ${cmd.syntax.map(line => `<div class="font-mono text-xs text-deepsea dark:text-slate-200 whitespace-pre-wrap break-all leading-relaxed">${escapeHtml(line)}</div>`).join('')}
                             </div>
                         </div>
 
-                        <div class="mt-auto">
-                            <span class="block text-[11px] font-bold uppercase tracking-wider text-deepsea/70 dark:text-lagoon mb-1">Exemplos (clique para copiar)</span>
+                        <div class="mt-auto min-w-0">
+                            <span class="block text-[11px] font-bold uppercase tracking-wider text-deepsea/70 dark:text-lagoon mb-1">Exemplos (toque para copiar)</span>
                             <div class="space-y-1.5">
                                 ${cmd.examples.map(ex => `
                                     <button type="button" data-cmd="${escapeHtml(ex)}" onclick="copyToClipboard(this.getAttribute('data-cmd'))"
-                                        class="w-full group flex items-center justify-between gap-2 text-left bg-abyss hover:bg-[#002836] text-goldglow px-3 py-2 rounded-xl border border-deepsea/60 hover:border-goldglow transition">
-                                        <code class="font-mono text-xs break-all"><span class="text-lagoon mr-1">$</span>${escapeHtml(ex)}</code>
-                                        <i data-lucide="copy" class="w-3.5 h-3.5 shrink-0 text-lagoon group-hover:text-goldglow"></i>
+                                        class="w-full min-h-[40px] group flex items-center justify-between gap-2 text-left bg-abyss hover:bg-[#002836] active:scale-[0.99] text-goldglow px-3 py-2 rounded-xl border border-deepsea/60 hover:border-goldglow transition">
+                                        <code class="font-mono text-xs break-all leading-snug"><span class="text-lagoon mr-1">$</span>${escapeHtml(ex)}</code>
+                                        <i data-lucide="copy" class="w-4 h-4 shrink-0 text-lagoon group-hover:text-goldglow"></i>
                                     </button>
                                 `).join('')}
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 px-5 py-3 bg-deepsea/5 dark:bg-deepsea/25 border-t border-deepsea/15 dark:border-deepsea/60 flex items-start gap-2">
+                    <div class="mt-4 px-4 sm:px-5 py-3 bg-deepsea/5 dark:bg-deepsea/25 border-t border-deepsea/15 dark:border-deepsea/60 flex items-start gap-2">
                         <i data-lucide="lightbulb" class="w-4 h-4 text-rust dark:text-goldglow shrink-0 mt-0.5"></i>
-                        <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${escapeHtml(cmd.tip)}</p>
+                        <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed break-words">${escapeHtml(cmd.tip)}</p>
                     </div>
                 </article>
                 `;
@@ -768,6 +777,24 @@
                 themeToggle.addEventListener('click', () => {
                     document.documentElement.classList.toggle('dark');
                     localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                });
+            }
+
+            // Botão Voltar ao Topo no Mobile
+            const backToTopBtn = document.getElementById('back-to-top');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 350) {
+                        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                        backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                        backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+                    }
+                }, { passive: true });
+
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             }
         });

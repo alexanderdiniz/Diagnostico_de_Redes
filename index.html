@@ -34,7 +34,7 @@
     </script>
     <style>
         html, body {
-            max-width: 100vw;
+            max-width: 100%;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
@@ -121,14 +121,11 @@
     <!-- Conteúdo Principal -->
     <main class="max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-6">
 
-        <!-- ========================================================= -->
-        <!-- ABA 1: LISTA DE COMANDOS                                  -->
-        <!-- ========================================================= -->
+        <!-- ABA 1: LISTA DE COMANDOS -->
         <section id="tab-comandos" class="tab-panel block">
             
             <!-- Barra de Busca + Filtro Único por Sistema -->
             <div class="bg-white dark:bg-[#001D27] p-3.5 sm:p-4 rounded-2xl border border-deepsea/20 dark:border-deepsea/70 mb-4 sm:mb-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 no-print">
-                <!-- Busca (text-base evita zoom automático no iOS/Android) -->
                 <div class="relative w-full lg:w-80 shrink-0">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-deepsea dark:text-lagoon"></i>
                     <input type="text" id="search-input" placeholder="Buscar comando, porta ou função..." 
@@ -138,7 +135,6 @@
                     </button>
                 </div>
 
-                <!-- Filtro Simples por Sistema (Grid 2 colunas no mobile para toque confortável) -->
                 <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center lg:justify-end gap-1.5" id="system-filters">
                     <button type="button" data-filter="all" class="filter-btn active min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-bold bg-deepsea text-white dark:bg-lagoon dark:text-abyss transition">
                         Todos (39)
@@ -169,7 +165,7 @@
                 <span class="text-xs text-slate-500 dark:text-slate-400">Toque em qualquer exemplo para copiar</span>
             </div>
 
-            <!-- Grid de Comandos (min-w-0 evita estouro lateral no mobile) -->
+            <!-- Grid de Comandos -->
             <div id="commands-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch">
                 <!-- Preenchido via JS -->
             </div>
@@ -184,9 +180,7 @@
             </div>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- ABA 2: PASSO A PASSO DE DIAGNÓSTICO (CHECKLIST)           -->
-        <!-- ========================================================= -->
+        <!-- ABA 2: PASSO A PASSO DE DIAGNÓSTICO (CHECKLIST) -->
         <section id="tab-checklist" class="tab-panel hidden">
             <div class="max-w-3xl mx-auto bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-5 sm:p-6 shadow-sm">
                 <div class="mb-6 text-center sm:text-left">
@@ -257,12 +251,9 @@
             </div>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- ABA 3: TABELA COMPARATIVA & PORTAS                        -->
-        <!-- ========================================================= -->
+        <!-- ABA 3: TABELA COMPARATIVA & PORTAS -->
         <section id="tab-tabela" class="tab-panel hidden">
             <div class="max-w-4xl mx-auto space-y-6">
-                <!-- Tabela Multiplataforma -->
                 <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-5 sm:p-6 shadow-sm">
                     <h2 class="text-lg font-extrabold uppercase text-deepsea dark:text-goldglow mb-1 text-center sm:text-left">
                         Equivalência: Windows CMD × PowerShell × Linux
@@ -293,7 +284,6 @@
                     </div>
                 </div>
 
-                <!-- Cola Rápida de Portas -->
                 <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-5 sm:p-6 shadow-sm">
                     <h3 class="text-sm font-extrabold uppercase text-deepsea dark:text-goldglow mb-3 text-center sm:text-left">
                         Portas Mais Testadas no Dia a Dia

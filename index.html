@@ -3,958 +3,768 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Completo de Diagnóstico Wi-Fi & PowerShell - Tema Dracula</title>
-    <!-- Tailwind CSS -->
+    <title>Guia de Comandos de Rede</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: JetBrains Mono & Inter -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        dracula: {
-                            bg: '#282a36',
-                            current: '#44475a',
-                            fg: '#f8f8f2',
-                            comment: '#6272a4',
-                            cyan: '#8be9fd',
-                            green: '#50fa7b',
-                            orange: '#ffb86c',
-                            pink: '#ff79c6',
-                            purple: '#bd93f9',
-                            red: '#ff5555',
-                            yellow: '#f1fa8c'
-                        }
-                    },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        abyss: '#001219',
+                        deepsea: '#005F73',
+                        lagoon: '#0A9396',
+                        rust: '#CA6702',
+                        goldglow: '#EE9B00',
+                    },
+                    boxShadow: {
+                        'amber-glow': '0 0 20px rgba(238, 155, 0, 0.25)',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Custom Scrollbar for Dracula Theme */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        .text-glow-amber {
+            text-shadow: 0 0 18px rgba(238, 155, 0, 0.45), 0 0 4px rgba(202, 103, 2, 0.6);
         }
-        ::-webkit-scrollbar-track {
-            background: rgba(40, 42, 54, 0.5);
+        .dark .card-night-market {
+            background: linear-gradient(180deg, rgba(0, 42, 56, 0.72) 0%, rgba(0, 18, 25, 0.96) 100%);
         }
-        .light ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #6272a4;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #bd93f9;
-        }
-
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Responsive table wrapping */
-        .table-responsive {
-            display: block;
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Dracula Dark Theme Defaults & Overrides */
-        html.dark body {
-            background-color: #282a36 !important;
-            color: #f8f8f2 !important;
-        }
-
-        /* Light Theme Styles Override */
-        html.light {
-            background-color: #f8fafc !important;
-            color: #0f172a !important;
-        }
-        html.light body {
-            background-color: #f8fafc !important;
-            color: #0f172a !important;
-        }
-        html.light header {
-            background-color: rgba(255, 255, 255, 0.95) !important;
-            border-color: #e2e8f0 !important;
-        }
-        html.light header h1 {
-            color: #6b21a8 !important;
-        }
-        html.light header p {
-            color: #64748b !important;
-        }
-        html.light aside div {
-            background-color: #ffffff !important;
-            border-color: #e2e8f0 !important;
-        }
-        html.light aside nav a {
-            color: #1e293b !important;
-            font-weight: 600;
-        }
-        html.light aside nav a:hover {
-            background-color: #f1f5f9 !important;
-            color: #6b21a8 !important;
-        }
-        html.light .dracula-card {
-            background-color: #ffffff !important;
-            border-color: #cbd5e1 !important;
-            color: #0f172a !important;
-        }
-        html.light section h2, html.light section h3 {
-            color: #581c87 !important;
-        }
-        html.light section p {
-            color: #334155 !important;
-        }
-        html.light table th {
-            background-color: #f1f5f9 !important;
-            color: #1e293b !important;
-        }
-        html.light table td {
-            color: #1e293b !important;
-        }
-        html.light table tr:hover {
-            background-color: #f8fafc !important;
-        }
-        html.light pre {
-            background-color: #282a36 !important;
-            color: #f8f8f2 !important;
-            border-color: #44475a !important;
-        }
-        html.light footer {
-            background-color: #ffffff !important;
-            border-color: #e2e8f0 !important;
-            color: #64748b !important;
-        }
-
-        /* Print Specific Styles for clean PDF export */
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            body {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-                font-size: 11pt;
-            }
-            .print-full-width {
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            pre, code {
-                border: 1px solid #ccc !important;
-                white-space: pre-wrap !important;
-                word-break: break-all !important;
-                background-color: #f8f9fa !important;
-                color: #24292e !important;
-            }
-            .dracula-card {
-                border: 1px solid #e2e8f0 !important;
-                box-shadow: none !important;
-                background: #ffffff !important;
-                color: #1e293b !important;
-            }
+            body { background: #ffffff !important; color: #001219 !important; }
+            header, #toast, .no-print { display: none !important; }
+            .card-night-market { background: #ffffff !important; border: 1px solid #cbd5e1 !important; break-inside: avoid; }
         }
     </style>
 </head>
-<body class="bg-dracula-bg text-dracula-fg font-sans transition-colors duration-300 min-h-screen flex flex-col light:bg-slate-50 light:text-slate-800">
+<body class="bg-[#F4F7F8] text-[#001219] dark:bg-abyss dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
 
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-50 bg-dracula-bg/95 backdrop-blur border-b border-dracula-current light:bg-white/90 light:border-slate-200 no-print">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Logo & Title -->
-            <div class="flex items-center space-x-3">
-                <div class="bg-dracula-purple text-dracula-bg p-2 rounded-lg font-mono font-bold text-lg shadow-md shrink-0">
-                    <i class="fa-solid fa-wifi"></i>
-                </div>
-                <div class="truncate">
-                    <h1 class="font-bold text-base sm:text-xl text-dracula-cyan light:text-purple-700 leading-tight truncate">
-                        Manual Wi-Fi & PowerShell 7.6.9
-                    </h1>
-                    <p class="text-xs text-dracula-comment light:text-slate-500 hidden sm:block">Guia Completo de Diagnóstico & Resolução de Erros</p>
-                </div>
-            </div>
+    <!-- Toast de Cópia -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2 bg-abyss dark:bg-lagoon text-white border border-goldglow/50 px-4 py-3 rounded-xl shadow-amber-glow font-medium text-sm">
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-goldglow dark:text-abyss"></i>
+        <span id="toast-msg">Copiado!</span>
+    </div>
 
-            <!-- Action Controls (Desktop) & Hamburger Toggle (Mobile) -->
-            <div class="flex items-center space-x-2">
-                <!-- Desktop Buttons -->
-                <div class="hidden md:flex items-center space-x-2">
-                    <!-- Share Button -->
-                    <button onclick="sharePage()" title="Compartilhar Página" class="px-3 py-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg rounded-lg text-xs font-semibold transition flex items-center space-x-2 light:bg-slate-200 light:text-slate-700 light:hover:bg-slate-300">
-                        <i class="fa-solid fa-share-nodes"></i>
-                        <span>Compartilhar</span>
-                    </button>
-
-                    <!-- PDF Download Button -->
-                    <button onclick="window.print()" title="Baixar/Imprimir em PDF" class="px-3 py-2 bg-dracula-purple hover:bg-opacity-90 text-dracula-bg rounded-lg text-xs font-bold transition flex items-center space-x-2 shadow-md">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        <span>Baixar PDF</span>
-                    </button>
-
-                    <!-- Theme Toggle Button -->
-                    <button id="themeToggle" onclick="toggleTheme()" title="Alternar Modo Claro/Escuro" class="px-3 py-2 bg-dracula-yellow text-dracula-bg rounded-lg text-xs font-bold transition flex items-center space-x-2 shadow-md">
-                        <i id="themeIcon" class="fa-solid fa-sun"></i>
-                        <span id="themeText">Modo Claro</span>
-                    </button>
+    <!-- Cabeçalho Limpo com Abas de Navegação -->
+    <header class="bg-white dark:bg-abyss border-b border-deepsea/20 dark:border-deepsea/60">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 text-center sm:text-left">
+                    <div class="p-2.5 bg-gradient-to-br from-rust to-goldglow text-abyss rounded-xl shadow-amber-glow">
+                        <i data-lucide="terminal" class="w-6 h-6 stroke-[2.25]"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-extrabold uppercase text-deepsea dark:text-goldglow dark:text-glow-amber">
+                            Diagnóstico de Rede
+                        </h1>
+                        <p class="text-xs font-medium text-rust dark:text-lagoon">
+                            Windows CMD • PowerShell • Linux
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Mobile Hamburger Button -->
-                <button id="hamburgerBtn" onclick="toggleMobileMenu()" title="Abrir Menu" class="md:hidden p-2.5 text-dracula-fg hover:bg-dracula-current rounded-lg text-lg transition focus:outline-none light:text-slate-700 light:hover:bg-slate-100">
-                    <i id="hamburgerIcon" class="fa-solid fa-bars"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Drawer Menu -->
-        <div id="mobileMenu" class="hidden md:hidden border-t border-dracula-current bg-dracula-bg light:bg-white light:border-slate-200 px-4 py-4 space-y-4 shadow-xl">
-            <!-- Mobile Action Buttons -->
-            <div class="grid grid-cols-3 gap-2 pb-3 border-b border-dracula-current/50 light:border-slate-200">
-                <button onclick="sharePage()" class="p-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg rounded-lg text-xs font-semibold flex flex-col items-center justify-center space-y-1 light:bg-slate-100 light:text-slate-700">
-                    <i class="fa-solid fa-share-nodes"></i>
-                    <span>Compartilhar</span>
-                </button>
-                <button onclick="window.print()" class="p-2 bg-dracula-purple text-dracula-bg rounded-lg text-xs font-bold flex flex-col items-center justify-center space-y-1 shadow">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    <span>Baixar PDF</span>
-                </button>
-                <button onclick="toggleTheme()" class="p-2 bg-dracula-yellow text-dracula-bg rounded-lg text-xs font-bold flex flex-col items-center justify-center space-y-1 shadow">
-                    <i id="themeIconMobile" class="fa-solid fa-sun"></i>
-                    <span id="themeTextMobile">Tema</span>
-                </button>
+                <!-- Controles Rápidos -->
+                <div class="flex items-center gap-2 no-print">
+                    <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-lagoon border border-deepsea/20 dark:border-deepsea text-xs font-semibold hover:border-goldglow transition">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span>PDF / Imprimir</span>
+                    </button>
+                    <button type="button" id="theme-toggle" aria-label="Alternar tema" class="p-2 rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-goldglow border border-deepsea/20 dark:border-deepsea hover:border-goldglow transition">
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- Navigation Links -->
-            <div>
-                <p class="text-xs font-mono uppercase text-dracula-orange font-bold mb-2">Navegação Rápida</p>
-                <nav class="space-y-1 text-sm font-medium">
-                    <a href="#erro-inicial" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">1. Erro WlanSvc</a>
-                    <a href="#tabela-comandos" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">2. Tabela de Comandos</a>
-                    <a href="#wlanreport" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">3. Relatório WLAN Report</a>
-                    <a href="#canais-wifi" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">4. Canais Wi-Fi & Sinal</a>
-                    <a href="#reset-rede" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">5. Reset da Pilha de Rede</a>
-                    <a href="#ping-log" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">6. Ping c/ Timestamp</a>
-                    <a href="#driver-wifi" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">7. Reinstalação de Driver</a>
-                    <a href="#comandos-extras" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg/90 light:hover:bg-slate-100 light:text-slate-700">8. Comandos Avançados</a>
-                </nav>
-            </div>
+            <!-- Menu Principal por Abas (Separa o conteúdo para não confundir) -->
+            <nav class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-5 pt-4 border-t border-deepsea/10 dark:border-deepsea/40 no-print">
+                <button type="button" data-tab="tab-comandos" class="tab-btn active inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-goldglow text-abyss shadow-amber-glow transition">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                    <span>1. Comandos (39)</span>
+                </button>
+                <button type="button" data-tab="tab-checklist" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
+                    <i data-lucide="list-checks" class="w-4 h-4"></i>
+                    <span>2. Passo a Passo</span>
+                </button>
+                <button type="button" data-tab="tab-tabela" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
+                    <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+                    <span>3. Tabela Comparativa</span>
+                </button>
+            </nav>
         </div>
     </header>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-dracula-green text-dracula-bg px-4 py-3 rounded-lg shadow-xl font-medium flex items-center space-x-2 no-print">
-        <i class="fa-solid fa-circle-check"></i>
-        <span id="toastMessage">Código copiado com sucesso!</span>
-    </div>
+    <!-- Conteúdo Principal -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6">
 
-    <!-- Main Content Layout -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8 print-full-width">
-        
-        <!-- Sidebar Navigation (Desktop Only) -->
-        <aside class="hidden lg:block lg:col-span-1 no-print">
-            <div class="sticky top-24 bg-dracula-current/40 border border-dracula-current rounded-xl p-4 shadow-sm">
-                <h3 class="font-bold text-sm uppercase tracking-wider text-dracula-orange mb-3 flex items-center space-x-2">
-                    <i class="fa-solid fa-list-ul"></i>
-                    <span>Sumário do Guia</span>
-                </h3>
-                <nav class="space-y-1.5 text-sm font-semibold">
-                    <a href="#erro-inicial" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        1. Erro Inicial WlanSvc
-                    </a>
-                    <a href="#tabela-comandos" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        2. Tabela de Comandos
-                    </a>
-                    <a href="#wlanreport" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        3. Relatório WLAN Report
-                    </a>
-                    <a href="#canais-wifi" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        4. Canais Wi-Fi & Sinal
-                    </a>
-                    <a href="#reset-rede" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        5. Reset Completo de Rede
-                    </a>
-                    <a href="#ping-log" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        6. Teste de Ping c/ Timestamp
-                    </a>
-                    <a href="#driver-wifi" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        7. Reinstalação de Driver
-                    </a>
-                    <a href="#comandos-extras" class="block px-3 py-2 rounded-lg hover:bg-dracula-current text-dracula-fg hover:text-dracula-cyan transition">
-                        8. Comandos Avançados Extras
-                    </a>
-                </nav>
+        <!-- ========================================================= -->
+        <!-- ABA 1: LISTA DE COMANDOS (LIMPA E DIRETA)                 -->
+        <!-- ========================================================= -->
+        <section id="tab-comandos" class="tab-panel block">
+            
+            <!-- Barra de Busca + Filtro Único por Sistema -->
+            <div class="bg-white dark:bg-[#001D27] p-4 rounded-2xl border border-deepsea/20 dark:border-deepsea/70 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 no-print">
+                <!-- Busca -->
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-deepsea dark:text-lagoon"></i>
+                    <input type="text" id="search-input" placeholder="Buscar comando (ex: ping, dns, porta)..." 
+                        class="w-full pl-10 pr-8 py-2.5 text-sm bg-slate-100 dark:bg-abyss border border-deepsea/20 dark:border-deepsea focus:border-goldglow rounded-xl outline-none text-abyss dark:text-white placeholder-slate-400">
+                    <button type="button" id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-goldglow">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
 
-                <div class="mt-6 pt-4 border-t border-dracula-comment/30 text-xs text-dracula-comment">
-                    <p><i class="fa-solid fa-terminal mr-1"></i> PowerShell 7.6.9 / Windows 11 & 10</p>
+                <!-- Filtro Simples por Sistema -->
+                <div class="flex flex-wrap items-center justify-center gap-1.5" id="system-filters">
+                    <button type="button" data-filter="all" class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-deepsea text-white dark:bg-lagoon dark:text-abyss transition">
+                        Todos
+                    </button>
+                    <button type="button" data-filter="nivel1" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                        Essenciais (Win)
+                    </button>
+                    <button type="button" data-filter="nivel2-cmd" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                        Windows CMD
+                    </button>
+                    <button type="button" data-filter="nivel2-ps" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                        PowerShell
+                    </button>
+                    <button type="button" data-filter="nivel2-linux" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-abyss text-deepsea dark:text-slate-300 border border-deepsea/15 dark:border-deepsea/60 hover:border-goldglow transition">
+                        Linux
+                    </button>
+                    <button type="button" data-filter="admin" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-rust/15 dark:bg-rust/25 text-rust dark:text-goldglow border border-rust/40 hover:border-goldglow transition">
+                        Admin / Root
+                    </button>
                 </div>
             </div>
-        </aside>
 
-        <!-- Document Main Content -->
-        <main class="lg:col-span-3 space-y-8 sm:space-y-10 print-full-width">
-            
-            <!-- Hero Header -->
-            <section class="border-b border-dracula-current pb-6">
-                <div class="inline-block bg-dracula-pink/20 text-dracula-pink px-3 py-1 rounded-full text-xs font-mono font-semibold mb-3 border border-dracula-pink/30">
-                    POWERSHELL & CMD DIAGNOSTICS
-                </div>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-dracula-fg tracking-tight lg:text-4xl">
-                    Diagnóstico Completo de Redes Sem Fio no Windows
-                </h2>
-                <p class="mt-3 text-sm sm:text-base text-dracula-fg/90 light:text-slate-700 leading-relaxed font-medium">
-                    Este documento compila a resolução de erros de serviços de rede sem fio, tabelas de referência rápida de comandos `netsh` e `PowerShell`, além de testes avançados de oscilação e manutenção de adaptadores Wi-Fi.
+            <!-- Contador Discreto -->
+            <div class="flex items-center justify-between mb-4 px-1">
+                <p id="results-count" class="text-xs font-semibold uppercase tracking-wider text-deepsea dark:text-lagoon">
+                    Exibindo 39 comandos
                 </p>
-            </section>
+                <span class="text-xs text-slate-500 dark:text-slate-400">Clique em qualquer exemplo para copiar</span>
+            </div>
 
-            <!-- SECTION 1: ERRO INICIAL -->
-            <section id="erro-inicial" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-red text-dracula-bg font-bold font-mono text-sm">01</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Resolução do Erro Inicial: Serviço WlanSvc Parado</h3>
+            <!-- Grid de Comandos (Todos visíveis de forma direta e organizada) -->
+            <div id="commands-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Preenchido via JS -->
+            </div>
+
+            <!-- Estado Vazio -->
+            <div id="empty-state" class="hidden text-center py-14 px-4 bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea">
+                <p class="text-base font-bold text-abyss dark:text-goldglow mb-1">Nenhum comando encontrado</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Tente buscar por outra palavra ou limpe o filtro.</p>
+                <button type="button" id="reset-filters-btn" class="px-4 py-2 bg-goldglow text-abyss text-xs font-bold rounded-xl">
+                    Limpar busca e filtros
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ABA 2: PASSO A PASSO DE DIAGNÓSTICO (CHECKLIST)           -->
+        <!-- ========================================================= -->
+        <section id="tab-checklist" class="tab-panel hidden">
+            <div class="max-w-3xl mx-auto bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-6 shadow-sm">
+                <div class="mb-6">
+                    <h2 class="text-lg font-extrabold uppercase text-deepsea dark:text-goldglow">
+                        Ordem Lógica para Resolver Falhas de Rede
+                    </h2>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                        Siga estas 5 etapas na sequência abaixo para descobrir exatamente onde a conexão está falhando. Clique no comando para copiar.
+                    </p>
                 </div>
 
-                <div class="bg-dracula-current/30 border-l-4 border-dracula-red p-4 rounded-r-xl light:bg-red-50 light:border-red-500">
-                    <h4 class="font-bold text-dracula-red light:text-red-700 flex items-center space-x-2">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>Mensagem de Erro Observada:</span>
-                    </h4>
-                    <pre class="mt-2 text-xs sm:text-sm font-mono text-dracula-fg light:text-slate-800 bg-dracula-bg p-3 rounded-lg overflow-x-auto light:bg-slate-900 light:text-red-400">PS C:\> netsh wlan show networks mode=bssid
-O Serviço de Configuração Automática sem Fio (wlansvc) não está em execução.</pre>
-                </div>
-
-                <p class="text-dracula-fg/90 light:text-slate-700 leading-relaxed">
-                    O utilitário `netsh wlan` depende diretamente do serviço **WlanSvc (Configuração Automática Sem Fio)** do Windows. Se ele estiver desativado ou parado, a placa Wi-Fi não escaneará nem exibirá nenhuma rede ou BSSID.
-                </p>
-
-                <!-- Passos para Solução -->
-                <div class="space-y-3 mt-4">
-                    <h4 class="font-bold text-sm uppercase tracking-wider text-dracula-orange">Passo a Passo para Correção:</h4>
-
-                    <!-- Step 1 -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-mono font-bold text-dracula-green bg-dracula-green/10 px-2.5 py-1 rounded-md border border-dracula-green/20">PASSO 1</span>
-                            <span class="text-xs text-dracula-comment">Requisito de Elevação</span>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 1 • Placa de Rede Local</span>
+                            <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Testa se o protocolo TCP/IP do próprio computador está funcionando.</p>
                         </div>
-                        <p class="text-sm font-semibold mb-2">Abrir o PowerShell como Administrador</p>
-                        <p class="text-xs text-dracula-comment light:text-slate-600 mb-3">Pressione o menu Iniciar, digite <strong>PowerShell</strong>, clique com o botão direito e selecione <strong>Executar como Administrador</strong>.</p>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-mono font-bold text-dracula-green bg-dracula-green/10 px-2.5 py-1 rounded-md border border-dracula-green/20">PASSO 2</span>
-                            <span class="text-xs text-dracula-comment">Inicialização Imediata</span>
-                        </div>
-                        <p class="text-sm font-semibold mb-2">Iniciar o Serviço WlanSvc</p>
-                        <div class="relative group">
-                            <pre class="bg-dracula-bg text-dracula-cyan p-3.5 pr-20 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current">Start-Service WlanSvc</pre>
-                            <button onclick="copyCode(this)" class="absolute right-2 top-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-2.5 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1.5 shadow-sm no-print">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-mono font-bold text-dracula-green bg-dracula-green/10 px-2.5 py-1 rounded-md border border-dracula-green/20">PASSO 3</span>
-                            <span class="text-xs text-dracula-comment">Persistência na Inicialização</span>
-                        </div>
-                        <p class="text-sm font-semibold mb-2">Configurar para Início Automático com o Windows</p>
-                        <div class="relative group">
-                            <pre class="bg-dracula-bg text-dracula-cyan p-3.5 pr-20 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current">Set-Service WlanSvc -StartupType Automatic</pre>
-                            <button onclick="copyCode(this)" class="absolute right-2 top-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-2.5 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1.5 shadow-sm no-print">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 4 -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-mono font-bold text-dracula-green bg-dracula-green/10 px-2.5 py-1 rounded-md border border-dracula-green/20">PASSO 4</span>
-                            <span class="text-xs text-dracula-comment">Validação</span>
-                        </div>
-                        <p class="text-sm font-semibold mb-2">Executar Novamente o Comando Desejado</p>
-                        <div class="relative group">
-                            <pre class="bg-dracula-bg text-dracula-green p-3.5 pr-20 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current">netsh wlan show networks mode=bssid</pre>
-                            <button onclick="copyCode(this)" class="absolute right-2 top-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-2.5 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1.5 shadow-sm no-print">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: TABELA DE COMANDOS -->
-            <section id="tabela-comandos" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-purple text-dracula-bg font-bold font-mono text-sm shrink-0 shadow-md shadow-dracula-purple/30">02</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Guia de Comandos para Análise de Wi-Fi e Rede</h3>
-                </div>
-
-                <div class="table-responsive rounded-xl border border-dracula-current shadow-lg shadow-dracula-purple/10 light:shadow-md light:shadow-slate-200">
-                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                        <thead>
-                            <tr class="bg-dracula-current text-dracula-pink font-mono border-b border-dracula-comment/30">
-                                <th class="p-3 sm:p-4 min-w-[200px]">Comando</th>
-                                <th class="p-3 sm:p-4 min-w-[80px]">Tipo</th>
-                                <th class="p-3 sm:p-4 min-w-[250px]">Finalidade / Descrição</th>
-                                <th class="p-3 sm:p-4 text-center no-print min-w-[60px]">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-dracula-current/50 bg-dracula-bg/50">
-                            <!-- Row 1 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netsh wlan show networks mode=bssid</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Exibe todas as redes Wi-Fi ao alcance com sinal, segurança e endereço MAC (BSSID) dos roteadores.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netsh wlan show networks mode=bssid')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 2 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netsh wlan show interfaces</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Mostra o status detalhado da conexão Wi-Fi atual (qualidade do sinal %, frequência GHz, taxa de transmissão).</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netsh wlan show interfaces')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 3 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netsh wlan show drivers</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Exibe fornecedor, versão do driver e suporte a recursos avançados (como rede hospedada e Wi-Fi Direct).</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netsh wlan show drivers')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 4 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netsh wlan show profiles</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Lista o histórico de todas as redes Wi-Fi às quais o computador já se conectou.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netsh wlan show profiles')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 5 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netsh wlan show profile name="NOME" key=clear</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Exibe as propriedades da rede salva e revela a senha em texto puro no campo "Conteúdo da Chave".</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netsh wlan show profile name=\"NOME\" key=clear')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 6 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netsh wlan show wlanreport</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Gera um relatório completo em arquivo HTML contendo histórico de quedas, conexões e desconexões.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netsh wlan show wlanreport')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 7 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-green font-semibold">Get-Service WlanSvc</td>
-                                <td class="p-3 font-mono text-xs text-dracula-purple">PowerShell</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Verifica o status atual (Running/Stopped) do serviço de rede sem fio.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('Get-Service WlanSvc')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 8 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-green font-semibold">Restart-Service WlanSvc</td>
-                                <td class="p-3 font-mono text-xs text-dracula-purple">PowerShell</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Reinicia o serviço de Wi-Fi do Windows para destravar o adaptador sem precisar reiniciar o sistema.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('Restart-Service WlanSvc')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 9 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">ipconfig /all</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Lista detalhadamente todos os IPs locais, Gateway Padrão, servidores DNS e MAC de cada adaptador.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('ipconfig /all')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 10 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">ipconfig /flushdns</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Limpa a memória cache DNS do computador para solucionar falhas na resolução de nomes de sites.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('ipconfig /flushdns')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 11 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netsh wlan show all</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Dump completo de todas as informações de WLAN (interfaces, perfis, drivers, redes e políticas).</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netsh wlan show all')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 12 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-green font-semibold">Get-NetAdapter</td>
-                                <td class="p-3 font-mono text-xs text-dracula-purple">PowerShell</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Lista todos os adaptadores de rede físicos e virtuais com status, velocidade de link e interface.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('Get-NetAdapter')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 13 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-green font-semibold">Test-NetConnection 8.8.8.8 -Port 53</td>
-                                <td class="p-3 font-mono text-xs text-dracula-purple">PowerShell</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Teste avançado de conectividade TCP/ICMP, verificando se portas específicas estão acessíveis.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('Test-NetConnection 8.8.8.8 -Port 53')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 14 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">netstat -ano</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Exibe todas as conexões TCP/UDP ativas e o PID (ID do processo) que está utilizando a porta.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('netstat -ano')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 15 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">arp -a</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Mostra a tabela ARP com o mapeamento entre os endereços IP e os endereços MAC da rede local.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('arp -a')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 16 -->
-                            <tr class="hover:bg-dracula-current/20 light:hover:bg-slate-50 transition">
-                                <td class="p-3 font-mono text-dracula-cyan font-semibold">nslookup google.com</td>
-                                <td class="p-3 font-mono text-xs text-dracula-yellow">CMD / PS</td>
-                                <td class="p-3 text-dracula-fg/90 light:text-slate-700">Consulta servidores DNS para verificar falhas de resolução de nomes e endereços IP de domínios.</td>
-                                <td class="p-3 text-center no-print">
-                                    <button onclick="copyText('nslookup google.com')" class="bg-dracula-current hover:bg-dracula-comment text-dracula-fg p-1.5 rounded text-xs transition" title="Copiar Comando">
-                                        <i class="fa-regular fa-copy"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- SECTION 3: WLANREPORT -->
-            <section id="wlanreport" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-green text-dracula-bg font-bold font-mono text-sm">03</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Como Gerar e Analisar o Relatório WLAN Report</h3>
-                </div>
-
-                <p class="text-dracula-fg/90 light:text-slate-700 leading-relaxed">
-                    O <strong>WLAN Report</strong> é uma das ferramentas mais valiosas nativas do Windows para diagnosticar quedas intermitentes, falhas de autenticação e problemas de driver Wi-Fi.
-                </p>
-
-                <div class="space-y-3">
-                    <div class="relative group">
-                        <pre class="bg-dracula-bg text-dracula-green p-4 pr-20 rounded-xl font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current">netsh wlan show wlanreport</pre>
-                        <button onclick="copyCode(this)" class="absolute right-3 top-3 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                            <i class="fa-regular fa-copy"></i>
-                            <span>Copiar</span>
+                        <button type="button" data-cmd="ping 127.0.0.1" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                            <span>$ ping 127.0.0.1</span>
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
                         </button>
                     </div>
 
-                    <div class="bg-dracula-current/30 p-4 rounded-xl border border-dracula-current light:bg-slate-100 light:border-slate-200 text-sm space-y-2">
-                        <p class="font-bold text-dracula-yellow light:text-yellow-700">Onde encontrar o arquivo retornado?</p>
-                        <p class="text-xs font-mono text-dracula-fg/80 light:text-slate-600 bg-dracula-bg/60 p-2 rounded light:bg-white">C:\ProgramData\Microsoft\Windows\WlanReport\wlan-report-latest.html</p>
-                        <p class="text-dracula-comment light:text-slate-600 text-xs">
-                            Basta copiar o caminho gerado pelo terminal e colar na barra de endereços do seu navegador (Microsoft Edge, Chrome ou Firefox) para visualizar os gráficos interativos de eventos de rede.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: CANAIS WI-FI -->
-            <section id="canais-wifi" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-yellow text-dracula-bg font-bold font-mono text-sm">04</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Análise de Frequência e Escolha do Canal Wi-Fi</h3>
-                </div>
-
-                <p class="text-dracula-fg/90 light:text-slate-700 leading-relaxed">
-                    A interferência de roteadores vizinhos operando no mesmo canal causa perda de pacotes e alta latência. Ao rodar o comando abaixo, avalie a distribuição dos canais ao seu redor:
-                </p>
-
-                <div class="relative group">
-                    <pre class="bg-dracula-bg text-dracula-cyan p-4 rounded-xl font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current light:bg-slate-900">netsh wlan show networks mode=bssid</pre>
-                    <button onclick="copyCode(this)" class="absolute right-3 top-3 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>Copiar</span>
-                    </button>
-                </div>
-
-                <!-- Grid de Dicas de Canais -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                    <div class="dracula-card bg-dracula-current/20 p-4 rounded-xl border border-dracula-current light:bg-white light:border-slate-200">
-                        <h4 class="font-bold text-dracula-orange mb-2 text-sm flex items-center space-x-2">
-                            <i class="fa-solid fa-broadcast-tower"></i>
-                            <span>Banda de 2.4 GHz</span>
-                        </h4>
-                        <p class="text-xs text-dracula-comment light:text-slate-600 leading-relaxed">
-                            Possui apenas <strong>3 canais que não se sobrepõem: 1, 6 e 11</strong>. Se a maioria dos vizinhos estiver usando o canal 6, configure manualmente seu roteador para o canal 1 ou 11.
-                        </p>
-                    </div>
-
-                    <div class="dracula-card bg-dracula-current/20 p-4 rounded-xl border border-dracula-current light:bg-white light:border-slate-200">
-                        <h4 class="font-bold text-dracula-green mb-2 text-sm flex items-center space-x-2">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span>Banda de 5 GHz / 6 GHz</span>
-                        </h4>
-                        <p class="text-xs text-dracula-comment light:text-slate-600 leading-relaxed">
-                            Possui dezenas de canais independentes (ex: 36, 40, 44, 149). Sofre muito menos interferência, embora tenha um alcance de sinal menor em comparação com a banda 2.4 GHz.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: RESET DA PILHA DE REDE -->
-            <section id="reset-rede" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-orange text-dracula-bg font-bold font-mono text-sm">05</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Reset Completo da Pilha de Rede (TCP/IP & Winsock)</h3>
-                </div>
-
-                <p class="text-dracula-fg/90 light:text-slate-700 leading-relaxed">
-                    Quando o Wi-Fi conecta mas fica "Sem Acesso à Internet" ou apresentando erros frequentes de DNS, execute esta sequência completa de limpeza no terminal como Administrador:
-                </p>
-
-                <div class="relative group">
-                    <pre class="bg-dracula-bg text-dracula-fg p-4 rounded-xl font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current space-y-1 light:bg-slate-900"><span class="text-dracula-comment"># 1. Liberar e renovar o endereço IP atribuído pelo DHCP</span>
-<span class="text-dracula-cyan">ipconfig /release</span>
-<span class="text-dracula-cyan">ipconfig /renew</span>
-
-<span class="text-dracula-comment"># 2. Limpar o cache do resolvedor de nomes DNS</span>
-<span class="text-dracula-cyan">ipconfig /flushdns</span>
-
-<span class="text-dracula-comment"># 3. Resetar o catálogo Winsock e a pilha IPv4 / IPv6 aos padrões de fábrica</span>
-<span class="text-dracula-pink">netsh winsock reset</span>
-<span class="text-dracula-pink">netsh int ip reset</span></pre>
-                    <button onclick="copyCode(this)" class="absolute right-3 top-3 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>Copiar Bloco</span>
-                    </button>
-                </div>
-
-                <div class="p-3 bg-dracula-orange/10 border border-dracula-orange/30 rounded-lg text-xs text-dracula-orange flex items-center space-x-2">
-                    <i class="fa-solid fa-circle-info text-base"></i>
-                    <span>Nota: Após a execução do `netsh winsock reset`, é essencial reiniciar o computador para concluir o processo de restauração dos drivers de soquete.</span>
-                </div>
-            </section>
-
-            <!-- SECTION 6: PING DE TESTE C/ TIMESTAMP -->
-            <section id="ping-log" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-pink text-dracula-bg font-bold font-mono text-sm">06</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Teste Avançado de Ping com Timestamp e Registro em Arquivo</h3>
-                </div>
-
-                <p class="text-dracula-fg/90 light:text-slate-700 leading-relaxed">
-                    Para registrar microquedas ou provar instabilidades para o suporte do seu Provedor de Internet (ISP), este script em PowerShell monitora pings contínuos e anexa a data e hora exatas de cada resposta em um log na sua Área de Trabalho:
-                </p>
-
-                <div class="relative group">
-                    <pre class="bg-dracula-bg text-dracula-green p-4 rounded-xl font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current leading-relaxed light:bg-slate-900">ping -t 8.8.8.8 | ForEach-Object { "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - $_" } | Out-File -FilePath "$env:USERPROFILE\Desktop\ping_log.txt" -Encoding utf8</pre>
-                    <button onclick="copyCode(this)" class="absolute right-3 top-3 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-3 py-1.5 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>Copiar Comando</span>
-                    </button>
-                </div>
-
-                <!-- Card de Explicação do Código -->
-                <div class="bg-dracula-current/30 p-4 rounded-xl border border-dracula-current light:bg-slate-50 light:border-slate-200 text-xs sm:text-sm space-y-2">
-                    <h4 class="font-bold text-dracula-pink">Como Funciona este Comando:</h4>
-                    <ul class="list-disc list-inside space-y-1 text-dracula-fg/80 light:text-slate-600">
-                        <li><code class="font-mono text-dracula-cyan">ping -t 8.8.8.8</code>: Dispara pacotes ICMP contínuos para o servidor DNS do Google.</li>
-                        <li><code class="font-mono text-dracula-yellow">ForEach-Object</code>: Captura cada linha retornada pelo ping e adiciona o carimbo de data/hora atual.</li>
-                        <li><code class="font-mono text-dracula-green">Out-File ... ping_log.txt</code>: Salva tudo em tempo real em um arquivo chamado <code class="font-mono">ping_log.txt</code> na sua Área de Trabalho.</li>
-                    </ul>
-                    <p class="text-dracula-comment pt-1">Pressione <strong>Ctrl + C</strong> para parar o monitoramento a qualquer momento.</p>
-                </div>
-            </section>
-
-            <!-- SECTION 7: REINSTALAÇÃO DE DRIVER -->
-            <section id="driver-wifi" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-cyan text-dracula-bg font-bold font-mono text-sm">07</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Reinstalação Limpa do Driver de Wi-Fi</h3>
-                </div>
-
-                <p class="text-dracula-fg/90 light:text-slate-700 leading-relaxed">
-                    Se a placa de rede congelar ou parar de responder completamente, reinstalar o driver via Gerenciador de Dispositivos restaura a comunicação do hardware:
-                </p>
-
-                <ol class="list-decimal list-inside space-y-3 text-sm text-dracula-fg/90 light:text-slate-700">
-                    <li class="pl-2">
-                        Pressione <kbd class="px-2 py-1 bg-dracula-current rounded text-xs font-mono light:bg-slate-200">Win + X</kbd> e selecione <strong>Gerenciador de Dispositivos</strong> (ou execute <code class="font-mono text-dracula-cyan">devmgmt.msc</code>).
-                    </li>
-                    <li class="pl-2">
-                        Expanda a categoria <strong>Adaptadores de Rede</strong>.
-                    </li>
-                    <li class="pl-2">
-                        Clique com o botão direito na sua placa Wi-Fi (ex: <i>Intel Wi-Fi 6, Realtek Wireless, MediaTek</i>) e escolha <strong>Desinstalar o dispositivo</strong>.
-                    </li>
-                    <li class="pl-2">
-                        Marque a caixa <i>"Tentar remover o driver deste dispositivo"</i> e confirme a desinstalação.
-                    </li>
-                    <li class="pl-2">
-                        <strong>Reinicie o computador.</strong> O Windows detectará o hardware ao inicializar e instalará automaticamente um driver limpo e operacional.
-                    </li>
-                </ol>
-            </section>
-
-            <!-- SECTION 8: COMANDOS EXTRAS AVANÇADOS -->
-            <section id="comandos-extras" class="scroll-mt-24 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-dracula-purple text-dracula-bg font-bold font-mono text-sm">08</span>
-                    <h3 class="text-xl font-bold text-dracula-cyan light:text-purple-700">Comandos Avançados Adicionais para Diagnóstico de Rede</h3>
-                </div>
-
-                <p class="text-dracula-fg/90 light:text-slate-700 leading-relaxed">
-                    Ferramentas adicionais essenciais para auditar portas, tabelas de roteamento, mapeamento de IP/MAC e status de adaptadores no Windows.
-                </p>
-
-                <div class="space-y-4">
-                    <!-- Item 1: Test-NetConnection -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <h4 class="font-bold text-sm text-dracula-green mb-1">Teste de Conectividade com Test-NetConnection</h4>
-                        <p class="text-xs text-dracula-comment light:text-slate-600 mb-2">Verifica latência e acessibilidade a uma porta TCP específica (ex: porta 53 para DNS):</p>
-                        <div class="relative group">
-                            <pre class="bg-dracula-bg text-dracula-green p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current light:bg-slate-900">Test-NetConnection 8.8.8.8 -Port 53 -InformationLevel Detailed</pre>
-                            <button onclick="copyCode(this)" class="absolute right-2 top-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-2.5 py-1 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar</span>
-                            </button>
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 2 • Endereço IP e Gateway</span>
+                            <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Verifica se a máquina recebeu IP válido e qual é o IP do roteador (Gateway).</p>
                         </div>
+                        <button type="button" data-cmd="ipconfig /all" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                            <span>$ ipconfig /all</span>
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
+                        </button>
                     </div>
 
-                    <!-- Item 2: Netstat -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <h4 class="font-bold text-sm text-dracula-cyan mb-1">Auditoria de Portas com Netstat</h4>
-                        <p class="text-xs text-dracula-comment light:text-slate-600 mb-2">Exibe conexões ativas junto com o ID numérico do processo (PID):</p>
-                        <div class="relative group">
-                            <pre class="bg-dracula-bg text-dracula-cyan p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current light:bg-slate-900">netstat -ano</pre>
-                            <button onclick="copyCode(this)" class="absolute right-2 top-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-2.5 py-1 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar</span>
-                            </button>
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 3 • Acesso à Internet (por IP)</span>
+                            <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Testa a saída para a internet sem depender de nomes de sites (DNS).</p>
                         </div>
+                        <button type="button" data-cmd="ping 8.8.8.8" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                            <span>$ ping 8.8.8.8</span>
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
+                        </button>
                     </div>
 
-                    <!-- Item 3: ARP e Rota -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <h4 class="font-bold text-sm text-dracula-orange mb-1">Mapeamento Local com Tabela ARP</h4>
-                        <p class="text-xs text-dracula-comment light:text-slate-600 mb-2">Lista dispositivos conectados na sua rede local e seus endereços físicos MAC:</p>
-                        <div class="relative group">
-                            <pre class="bg-dracula-bg text-dracula-orange p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current light:bg-slate-900">arp -a</pre>
-                            <button onclick="copyCode(this)" class="absolute right-2 top-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-2.5 py-1 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar</span>
-                            </button>
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 4 • Resolução de Nomes (DNS)</span>
+                            <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Se o Passo 3 funcionou mas sites não abrem, o problema está no DNS.</p>
                         </div>
+                        <button type="button" data-cmd="nslookup google.com" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                            <span>$ nslookup google.com</span>
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
+                        </button>
                     </div>
 
-                    <!-- Item 4: Get-NetIPAddress & Get-NetRoute -->
-                    <div class="dracula-card bg-dracula-current/20 border border-dracula-current p-4 rounded-xl light:bg-white light:border-slate-200">
-                        <h4 class="font-bold text-sm text-dracula-pink mb-1">Consulta de IPs e Rotas via PowerShell</h4>
-                        <p class="text-xs text-dracula-comment light:text-slate-600 mb-2">Exibe endereços IP atribuídos e rotas ativas do sistema:</p>
-                        <div class="relative group">
-                            <pre class="bg-dracula-bg text-dracula-pink p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto border border-dracula-current light:bg-slate-900">Get-NetIPAddress -AddressFamily IPv4 | Format-Table
-Get-NetRoute -AddressFamily IPv4</pre>
-                            <button onclick="copyCode(this)" class="absolute right-2 top-2 bg-dracula-current hover:bg-dracula-comment text-dracula-fg px-2.5 py-1 rounded text-xs font-mono transition flex items-center space-x-1 no-print">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar Bloco</span>
-                            </button>
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 5 • Porta e Firewall</span>
+                            <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Confirma se a porta específica do serviço (ex: 443 HTTPS ou 3389 RDP) está liberada.</p>
+                        </div>
+                        <button type="button" data-cmd="Test-NetConnection -ComputerName google.com -Port 443" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                            <span>$ Test-NetConnection :443</span>
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ABA 3: TABELA COMPARATIVA & PORTAS                        -->
+        <!-- ========================================================= -->
+        <section id="tab-tabela" class="tab-panel hidden">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <!-- Tabela Multiplataforma -->
+                <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-6 shadow-sm">
+                    <h2 class="text-lg font-extrabold uppercase text-deepsea dark:text-goldglow mb-1">
+                        Equivalência: Windows CMD × PowerShell × Linux
+                    </h2>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 mb-4">
+                        Consulte rapidamente qual comando usar em cada sistema operacional para a mesma tarefa.
+                    </p>
+                    <div class="overflow-x-auto rounded-xl border border-deepsea/20 dark:border-deepsea/70">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 dark:bg-abyss text-deepsea dark:text-goldglow uppercase font-bold">
+                                <tr>
+                                    <th class="px-4 py-3">Função</th>
+                                    <th class="px-4 py-3">Windows CMD</th>
+                                    <th class="px-4 py-3">PowerShell</th>
+                                    <th class="px-4 py-3">Linux</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-deepsea/10 dark:divide-deepsea/50 font-mono text-slate-700 dark:text-slate-200">
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Ver IP e Placas</td><td class="px-4 py-2.5">ipconfig /all</td><td class="px-4 py-2.5">Get-NetIPConfiguration</td><td class="px-4 py-2.5">ip a</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Portas e Conexões</td><td class="px-4 py-2.5">netstat -ano</td><td class="px-4 py-2.5">Get-NetTCPConnection</td><td class="px-4 py-2.5">ss -tunap</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Testar Porta TCP</td><td class="px-4 py-2.5">telnet host porta</td><td class="px-4 py-2.5">Test-NetConnection -Port</td><td class="px-4 py-2.5">nc -zv host porta</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Consultar DNS</td><td class="px-4 py-2.5">nslookup</td><td class="px-4 py-2.5">Resolve-DnsName</td><td class="px-4 py-2.5">dig</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Rastrear Rota</td><td class="px-4 py-2.5">tracert / pathping</td><td class="px-4 py-2.5">Test-NetConnection -TraceRoute</td><td class="px-4 py-2.5">traceroute / mtr</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Tabela ARP (IP/MAC)</td><td class="px-4 py-2.5">arp -a</td><td class="px-4 py-2.5">Get-NetNeighbor</td><td class="px-4 py-2.5">ip neigh</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Tabela de Rotas</td><td class="px-4 py-2.5">route print</td><td class="px-4 py-2.5">Get-NetRoute</td><td class="px-4 py-2.5">ip route show</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cola Rápida de Portas -->
+                <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-6 shadow-sm">
+                    <h3 class="text-sm font-extrabold uppercase text-deepsea dark:text-goldglow mb-3">
+                        Portas Mais Testadas no Dia a Dia
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 text-center">
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60">
+                            <span class="block font-mono font-bold text-base text-rust dark:text-goldglow">22</span>
+                            <span class="text-xs text-slate-600 dark:text-slate-300">SSH (Linux)</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60">
+                            <span class="block font-mono font-bold text-base text-rust dark:text-goldglow">53</span>
+                            <span class="text-xs text-slate-600 dark:text-slate-300">DNS</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60">
+                            <span class="block font-mono font-bold text-base text-rust dark:text-goldglow">80</span>
+                            <span class="text-xs text-slate-600 dark:text-slate-300">HTTP Web</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60">
+                            <span class="block font-mono font-bold text-base text-rust dark:text-goldglow">443</span>
+                            <span class="text-xs text-slate-600 dark:text-slate-300">HTTPS Seguro</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60">
+                            <span class="block font-mono font-bold text-base text-rust dark:text-goldglow">445</span>
+                            <span class="text-xs text-slate-600 dark:text-slate-300">Pastas SMB</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-abyss border border-deepsea/15 dark:border-deepsea/60">
+                            <span class="block font-mono font-bold text-base text-rust dark:text-goldglow">3389</span>
+                            <span class="text-xs text-slate-600 dark:text-slate-300">RDP Windows</span>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-        </main>
-    </div>
+    </main>
 
-    <!-- Footer -->
-    <footer class="bg-dracula-bg border-t border-dracula-current py-6 mt-12 light:bg-white light:border-slate-200 no-print">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-dracula-comment light:text-slate-500 space-y-2">
-            <p>Guia Interativo de Diagnóstico de Redes Sem Fio - Tema Inspirado no VS Code / Dracula Theme</p>
-            <p>PowerShell 7.6.9 & Netsh WLAN Tools • Windows 10 / 11</p>
+    <!-- Rodapé -->
+    <footer class="bg-white dark:bg-abyss border-t border-deepsea/20 dark:border-deepsea/60 py-5 mt-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs">
+            <p class="text-rust dark:text-goldglow font-semibold">Guia de Referência Rápida para Diagnóstico de Redes (Windows CMD, PowerShell e Linux).</p>
+            <p class="flex items-center gap-1.5 text-rust dark:text-goldglow font-semibold">
+                <i data-lucide="shield-check" class="w-4 h-4 text-lagoon"></i>
+                ALEXANDER
+            </p>
         </div>
     </footer>
 
-    <!-- JavaScript Logic -->
+    <!-- Base de Dados e Scripts -->
     <script>
-        // Toggle Mobile Navigation Menu
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            const icon = document.getElementById('hamburgerIcon');
-            
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-                icon.className = 'fa-solid fa-xmark';
-            } else {
-                menu.classList.add('hidden');
-                icon.className = 'fa-solid fa-bars';
-            }
-        }
+        const colorStyles = {
+            blue:    { border: 'border-t-[#005F73]', badge: 'bg-[#005F73]/15 text-[#005F73] dark:bg-[#005F73]/50 dark:text-[#7CE8EC]' },
+            green:   { border: 'border-t-[#0A9396]', badge: 'bg-[#0A9396]/15 text-[#005F73] dark:bg-[#0A9396]/30 dark:text-[#6FF7F9]' },
+            orange:  { border: 'border-t-[#EE9B00]', badge: 'bg-[#EE9B00]/20 text-[#9A4E00] dark:bg-[#EE9B00]/25 dark:text-[#EE9B00]' },
+            violet:  { border: 'border-t-[#CA6702]', badge: 'bg-[#CA6702]/15 text-[#CA6702] dark:bg-[#CA6702]/30 dark:text-[#FFB347]' },
+            teal:    { border: 'border-t-[#0A9396]', badge: 'bg-[#0A9396]/15 text-[#005F73] dark:bg-[#0A9396]/30 dark:text-[#6FF7F9]' },
+            red:     { border: 'border-t-[#CA6702]', badge: 'bg-[#CA6702]/15 text-[#CA6702] dark:bg-[#CA6702]/30 dark:text-[#FFB347]' },
+            magenta: { border: 'border-t-[#EE9B00]', badge: 'bg-[#EE9B00]/20 text-[#9A4E00] dark:bg-[#EE9B00]/25 dark:text-[#EE9B00]' },
+            cyan:    { border: 'border-t-[#0A9396]', badge: 'bg-[#0A9396]/15 text-[#005F73] dark:bg-[#0A9396]/30 dark:text-[#6FF7F9]' },
+            purple:  { border: 'border-t-[#005F73]', badge: 'bg-[#005F73]/15 text-[#005F73] dark:bg-[#005F73]/50 dark:text-[#7CE8EC]' },
+            brown:   { border: 'border-t-[#CA6702]', badge: 'bg-[#CA6702]/15 text-[#CA6702] dark:bg-[#CA6702]/30 dark:text-[#FFB347]' },
+            olive:   { border: 'border-t-[#0A9396]', badge: 'bg-[#0A9396]/15 text-[#005F73] dark:bg-[#0A9396]/30 dark:text-[#6FF7F9]' },
+            lime:    { border: 'border-t-[#EE9B00]', badge: 'bg-[#EE9B00]/20 text-[#9A4E00] dark:bg-[#EE9B00]/25 dark:text-[#EE9B00]' },
+            pink:    { border: 'border-t-[#CA6702]', badge: 'bg-[#CA6702]/15 text-[#CA6702] dark:bg-[#CA6702]/30 dark:text-[#FFB347]' },
+            gray:    { border: 'border-t-[#005F73]', badge: 'bg-[#005F73]/15 text-[#005F73] dark:bg-[#005F73]/50 dark:text-[#7CE8EC]' },
+        };
 
-        // Toggle Dark/Light Mode
-        function toggleTheme() {
-            const html = document.documentElement;
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            const themeIconMobile = document.getElementById('themeIconMobile');
-            const themeTextMobile = document.getElementById('themeTextMobile');
+        const commandsData = [
+            { id: 1, name: 'ipconfig', category: 'nivel1', categoryLabel: 'Essencial • Windows', color: 'blue', admin: false,
+              whatItDoes: 'Exibe a configuração TCP/IP das placas de rede (IP, máscara, gateway e DNS). Primeiro comando para checar se a máquina recebeu IP válido.',
+              syntax: ['ipconfig', 'ipconfig /all', 'ipconfig /release', 'ipconfig /renew', 'ipconfig /flushdns'],
+              examples: ['ipconfig /all', 'ipconfig /flushdns', 'ipconfig /renew'],
+              tip: '/all mostra MAC e DHCP; /flushdns limpa o cache DNS local.' },
+            { id: 2, name: 'ping', category: 'nivel1', categoryLabel: 'Essencial • Windows', color: 'green', admin: false,
+              whatItDoes: 'Envia pacotes ICMP para um destino e mede o tempo de resposta (latência) e perda de pacotes.',
+              syntax: ['ping <IP_ou_nome>', 'ping -t <IP_ou_nome>', 'ping -4 <IP_ou_nome>'],
+              examples: ['ping 8.8.8.8', 'ping -t 8.8.8.8', 'ping -4 google.com'],
+              tip: 'Em ping -t, use Ctrl + C para encerrar o teste contínuo.' },
+            { id: 3, name: 'nslookup', category: 'nivel1', categoryLabel: 'Essencial • Windows', color: 'orange', admin: false,
+              whatItDoes: 'Consulta o servidor DNS para descobrir qual IP corresponde a um domínio. Ajuda a isolar falhas de DNS.',
+              syntax: ['nslookup <nome>', 'nslookup <nome> <IP_DNS>'],
+              examples: ['nslookup google.com', 'nslookup google.com 8.8.8.8'],
+              tip: 'Testar com 8.8.8.8 no final verifica se o DNS interno da rede falhou.' },
+            { id: 4, name: 'tracert', category: 'nivel1', categoryLabel: 'Essencial • Windows', color: 'violet', admin: false,
+              whatItDoes: 'Mapeia a rota salto a salto até o destino, mostrando cada roteador intermediário e onde há lentidão ou queda.',
+              syntax: ['tracert <destino>', 'tracert -d <destino>'],
+              examples: ['tracert 8.8.8.8', 'tracert -d 8.8.8.8'],
+              tip: '-d ignora nomes DNS dos roteadores e acelera o resultado.' },
+            { id: 5, name: 'pathping', category: 'nivel1', categoryLabel: 'Essencial • Windows', color: 'teal', admin: false,
+              whatItDoes: 'Combina tracert + ping contínuo para medir a porcentagem exata de perda de pacotes em cada roteador do caminho.',
+              syntax: ['pathping <destino>', 'pathping -n <destino>', 'pathping -q <consultas> <destino>'],
+              examples: ['pathping 8.8.8.8', 'pathping -n 8.8.8.8'],
+              tip: 'Mais preciso que o tracert para diagnosticar intermitência na rota.' },
+            { id: 6, name: 'Test-NetConnection', category: 'nivel1', categoryLabel: 'Essencial • PowerShell', color: 'red', admin: false,
+              whatItDoes: 'Testa conectividade TCP a uma porta específica (HTTP, RDP, SMB, banco de dados), algo que o ping não faz.',
+              syntax: ['Test-NetConnection -ComputerName <host> -Port <porta>', 'Test-NetConnection -ComputerName <host> -CommonTCPPort <servico>'],
+              examples: ['Test-NetConnection -ComputerName 8.8.8.8 -Port 443', 'Test-NetConnection -ComputerName google.com -CommonTCPPort HTTP'],
+              tip: 'Rode no PowerShell. Aceita atalhos como HTTP, RDP, SMB e WinRM.' },
+            { id: 7, name: 'arp', category: 'nivel1', categoryLabel: 'Essencial • Windows', color: 'magenta', admin: true,
+              whatItDoes: 'Exibe e gerencia a tabela ARP (relação entre IP e endereço físico MAC na rede local). Detecta conflitos de IP.',
+              syntax: ['arp -a', 'arp -d <endereco_IP>'],
+              examples: ['arp -a', 'arp -d 192.168.1.1'],
+              tip: 'arp -d limpa a entrada em cache (exige Administrador).' },
+            { id: 8, name: 'netstat', category: 'nivel1', categoryLabel: 'Essencial • Windows', color: 'cyan', admin: false,
+              whatItDoes: 'Mostra conexões ativas, portas em escuta (LISTENING) e o PID do processo dono de cada porta.',
+              syntax: ['netstat -ano', 'netstat -ano | findstr :<porta>'],
+              examples: ['netstat -ano', 'netstat -ano | findstr :80', 'netstat -ano | findstr :443'],
+              tip: 'Combine o PID exibido com o comando tasklist para achar o programa.' },
+            { id: 9, name: 'netsh', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'purple', admin: true,
+              whatItDoes: 'Ferramenta completa de rede do Windows: configura IP, perfis Wi-Fi, firewall e reseta TCP/IP e Winsock.',
+              syntax: ['netsh interface ip show config', 'netsh wlan show profiles', 'netsh int ip reset', 'netsh winsock reset'],
+              examples: ['netsh interface ip show config', 'netsh wlan show profiles', 'netsh int ip reset', 'netsh winsock reset'],
+              tip: 'int ip reset e winsock reset corrigem falhas graves de rede (requer reinício).' },
+            { id: 10, name: 'route', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'brown', admin: true,
+              whatItDoes: 'Exibe e modifica a tabela de rotas do sistema, permitindo adicionar rotas estáticas para VPNs ou sub-redes.',
+              syntax: ['route print', 'route add <destino> mask <mascara> <gateway>', 'route -p add <destino> mask <mascara> <gateway>'],
+              examples: ['route print', 'route add 10.41.0.0 mask 255.255.0.0 10.27.0.1'],
+              tip: '-p torna a rota permanente após reiniciar o computador.' },
+            { id: 11, name: 'getmac', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'olive', admin: false,
+              whatItDoes: 'Exibe o endereço físico (MAC) de cada placa de rede instalada no computador.',
+              syntax: ['getmac', 'getmac /v', 'getmac /fo csv /nh'],
+              examples: ['getmac /v', 'getmac /fo csv /nh'],
+              tip: '/v exibe o nome amigável da placa de rede.' },
+            { id: 12, name: 'hostname', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'lime', admin: false,
+              whatItDoes: 'Exibe o nome do computador na rede. Útil em acessos remotos para confirmar em qual máquina você está.',
+              syntax: ['hostname'],
+              examples: ['hostname'],
+              tip: 'Funciona igualmente no Windows e no Linux.' },
+            { id: 13, name: 'nbtstat', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'pink', admin: false,
+              whatItDoes: 'Consulta tabelas NetBIOS sobre TCP/IP, descobrindo nome NetBIOS e MAC de máquinas Windows remotas pelo IP.',
+              syntax: ['nbtstat -n', 'nbtstat -c', 'nbtstat -A <IP_remoto>'],
+              examples: ['nbtstat -n', 'nbtstat -A 192.168.3.245'],
+              tip: '-A (maiúsculo) consulta o host remoto usando o endereço IP.' },
+            { id: 14, name: 'tasklist', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'cyan', admin: false,
+              whatItDoes: 'Lista processos em execução no Windows. Usado junto ao netstat para descobrir qual programa ocupa uma porta.',
+              syntax: ['tasklist', 'tasklist /fi "PID eq <numero>"'],
+              examples: ['tasklist /fi "PID eq 4452"'],
+              tip: 'Filtre pelo PID retornado no netstat -ano.' },
+            { id: 15, name: 'curl', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'orange', admin: false,
+              whatItDoes: 'Faz requisições HTTP/HTTPS e exibe cabeçalhos, códigos de status e respostas de sites ou APIs sem navegador.',
+              syntax: ['curl -I <URL>', 'curl <URL>', 'curl -O <URL>'],
+              examples: ['curl -I https://www.google.com', 'curl https://api.example.com/data'],
+              tip: 'No PowerShell, use curl.exe para evitar o alias Invoke-WebRequest.' },
+            { id: 16, name: 'wget', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'green', admin: false,
+              whatItDoes: 'Baixa arquivos da web via linha de comando com suporte a retomada (-c) e renomeação (-O).',
+              syntax: ['wget <URL>', 'wget -O <novo_nome> <URL>', 'wget -c <URL>'],
+              examples: ['wget https://example.com/test.jpg', 'wget -c https://example.com/arquivo.iso'],
+              tip: 'Nativo no Linux; no Windows CMD requer wget.exe no PATH.' },
+            { id: 17, name: 'telnet', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'gray', admin: false,
+              whatItDoes: 'Abre conexão TCP simples com um host e porta para testar se a porta está aberta e aceitando conexão.',
+              syntax: ['telnet <host> <porta>'],
+              examples: ['telnet 192.168.1.1 80', 'telnet 192.168.1.50 3306'],
+              tip: 'Ative o Cliente Telnet em "Recursos do Windows" se não estiver instalado.' },
+            { id: 18, name: 'net use', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'red', admin: false,
+              whatItDoes: 'Mapeia, lista e desconecta pastas compartilhadas na rede (SMB) em uma letra de unidade.',
+              syntax: ['net use', 'net use <letra>: \\\\<servidor>\\<pasta>', 'net use <letra>: /delete'],
+              examples: ['net use', 'net use Z: \\\\servidor\\pasta'],
+              tip: 'Ótimo para testar acesso e permissões em pastas de servidores.' },
+            { id: 19, name: 'net share', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'teal', admin: true,
+              whatItDoes: 'Lista, cria e remove compartilhamentos de pastas locais no próprio computador.',
+              syntax: ['net share', 'net share <nome>=<unidade>:\\<caminho>', 'net share <nome> /delete'],
+              examples: ['net share', 'net share DataShare=C:\\Data'],
+              tip: 'Rode apenas net share para auditar pastas expostas na máquina.' },
+            { id: 20, name: 'net view', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'violet', admin: false,
+              whatItDoes: 'Lista computadores e recursos compartilhados visíveis na rede local ou domínio.',
+              syntax: ['net view', 'net view \\\\<computador>'],
+              examples: ['net view', 'net view \\\\servidor'],
+              tip: 'Confirma se a estação enxerga servidores vizinhos na rede.' },
+            { id: 21, name: 'whoami /all', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'purple', admin: false,
+              whatItDoes: 'Mostra usuário atual, grupos do Active Directory (AD) e privilégios ativos da sessão.',
+              syntax: ['whoami /all', 'whoami /groups'],
+              examples: ['whoami /all'],
+              tip: 'Confirma se o usuário recebeu os grupos de permissão de rede.' },
+            { id: 22, name: 'gpresult', category: 'nivel2-cmd', categoryLabel: 'Windows CMD', color: 'brown', admin: true,
+              whatItDoes: 'Exibe políticas de grupo (GPO) aplicadas à máquina e usuário (útil para checar bloqueios de firewall/proxy).',
+              syntax: ['gpresult /r', 'gpresult /h relatorio.html'],
+              examples: ['gpresult /r'],
+              tip: 'Use gpupdate /force antes para atualizar as diretivas do domínio.' },
+            { id: 23, name: 'Get-NetIPConfiguration', category: 'nivel2-ps', categoryLabel: 'PowerShell', color: 'blue', admin: false,
+              whatItDoes: 'Equivalente moderno ao ipconfig /all no PowerShell, retornando objetos estruturados de IP, DNS e gateway.',
+              syntax: ['Get-NetIPConfiguration', 'Get-NetIPConfiguration -Detailed'],
+              examples: ['Get-NetIPConfiguration', 'Get-NetIPConfiguration -Detailed'],
+              tip: 'Ideal para filtros e scripts de automação no PowerShell.' },
+            { id: 24, name: 'Get-NetTCPConnection', category: 'nivel2-ps', categoryLabel: 'PowerShell', color: 'red', admin: false,
+              whatItDoes: 'Equivalente moderno ao netstat -ano no PowerShell, com filtros nativos por estado, porta e processo.',
+              syntax: ['Get-NetTCPConnection -State Listen', 'Get-NetTCPConnection -LocalPort <porta>'],
+              examples: ['Get-NetTCPConnection -State Listen', 'Get-NetTCPConnection -LocalPort 443'],
+              tip: 'Permite filtrar portas abertas de forma muito mais limpa que o netstat.' },
+            { id: 25, name: 'Resolve-DnsName', category: 'nivel2-ps', categoryLabel: 'PowerShell', color: 'orange', admin: false,
+              whatItDoes: 'Equivalente ao nslookup no PowerShell com suporte direto a registros A, AAAA, MX, TXT e PTR.',
+              syntax: ['Resolve-DnsName <nome>', 'Resolve-DnsName <nome> -Type <tipo>'],
+              examples: ['Resolve-DnsName google.com', 'Resolve-DnsName google.com -Type MX'],
+              tip: 'Use -Type PTR para fazer consulta reversa de um endereço IP.' },
+            { id: 26, name: 'Get-NetNeighbor', category: 'nivel2-ps', categoryLabel: 'PowerShell', color: 'magenta', admin: false,
+              whatItDoes: 'Equivalente ao arp -a no PowerShell, mostrando vizinhos (IP e MAC) e estado de alcançabilidade.',
+              syntax: ['Get-NetNeighbor', 'Get-NetNeighbor -State Reachable'],
+              examples: ['Get-NetNeighbor', 'Get-NetNeighbor -State Reachable'],
+              tip: '-State Reachable lista apenas hosts ativos recentemente.' },
+            { id: 27, name: 'Get-NetRoute', category: 'nivel2-ps', categoryLabel: 'PowerShell', color: 'teal', admin: false,
+              whatItDoes: 'Equivalente ao route print no PowerShell, exibindo rotas e métricas ordenáveis.',
+              syntax: ['Get-NetRoute', 'Get-NetRoute -DestinationPrefix "0.0.0.0/0"'],
+              examples: ['Get-NetRoute', 'Get-NetRoute -DestinationPrefix "0.0.0.0/0"'],
+              tip: 'Mostra qual gateway padrão tem prioridade (menor RouteMetric).' },
+            { id: 28, name: 'Clear-DnsClientCache', category: 'nivel2-ps', categoryLabel: 'PowerShell', color: 'violet', admin: false,
+              whatItDoes: 'Equivalente ao ipconfig /flushdns no PowerShell: limpa o cache DNS local do Windows.',
+              syntax: ['Clear-DnsClientCache', 'Clear-DnsClientCache -WhatIf'],
+              examples: ['Clear-DnsClientCache'],
+              tip: 'Resolve problemas de sites que mudaram de IP recentemente.' },
+            { id: 29, name: 'ip addr', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'blue', admin: false,
+              whatItDoes: 'Substituto moderno do ifconfig no Linux. Exibe e configura IPs, interfaces de rede e rotas.',
+              syntax: ['ip addr show', 'ip a', 'ip route show'],
+              examples: ['ip a', 'ip route show'],
+              tip: 'ip a mostra os IPs; ip route show exibe o gateway padrão.' },
+            { id: 30, name: 'ss', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'green', admin: true,
+              whatItDoes: 'Substituto moderno e rápido do netstat no Linux. Mostra sockets TCP/UDP, portas abertas e processos.',
+              syntax: ['ss -tuln', 'ss -tunap', 'ss -tuln | grep :<porta>'],
+              examples: ['ss -tuln', 'ss -tunap', 'ss -tuln | grep :80'],
+              tip: 'Use sudo ss -tunap para visualizar o nome/PID de todos os processos.' },
+            { id: 31, name: 'dig', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'orange', admin: false,
+              whatItDoes: 'Ferramenta avançada de consulta DNS no Linux para registros A, MX, TXT, NS e servidores específicos.',
+              syntax: ['dig <nome>', 'dig <nome> <tipo>', 'dig @<DNS> <nome>'],
+              examples: ['dig google.com', 'dig google.com MX', 'dig @8.8.8.8 google.com'],
+              tip: 'Use @8.8.8.8 para testar a resposta de um servidor DNS específico.' },
+            { id: 32, name: 'traceroute', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'violet', admin: true,
+              whatItDoes: 'Equivalente Linux ao tracert. Mostra o caminho salto a salto até o destino, inclusive via TCP (-T).',
+              syntax: ['traceroute <destino>', 'traceroute -n <destino>', 'traceroute -T -p <porta> <destino>'],
+              examples: ['traceroute google.com', 'traceroute -n 8.8.8.8', 'traceroute -T -p 443 google.com'],
+              tip: 'Rastrear via TCP (-T -p 443) funciona mesmo quando o ICMP está bloqueado.' },
+            { id: 33, name: 'mtr', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'teal', admin: false,
+              whatItDoes: 'Combina traceroute + ping contínuo em tempo real, exibindo perda de pacotes e latência por salto.',
+              syntax: ['mtr <destino>', 'mtr -n <destino>', 'mtr -rwc 20 <destino>'],
+              examples: ['mtr google.com', 'mtr -rwc 20 google.com'],
+              tip: '-rwc 20 gera um relatório pronto após 20 ciclos de teste.' },
+            { id: 34, name: 'nc (netcat)', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'red', admin: false,
+              whatItDoes: 'Testa portas TCP/UDP, abre conexões e transfere dados no Linux. Equivalente ao Test-NetConnection.',
+              syntax: ['nc -zv <host> <porta>'],
+              examples: ['nc -zv 192.168.1.50 443', 'nc -zv google.com 80'],
+              tip: '-zv verifica se a porta está aberta sem enviar dados.' },
+            { id: 35, name: 'tcpdump', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'magenta', admin: true,
+              whatItDoes: 'Captura e analisa pacotes de rede em tempo real na interface (equivalente CLI ao Wireshark).',
+              syntax: ['tcpdump -i <interface>', 'tcpdump -i <interface> \'port <porta>\''],
+              examples: ['tcpdump -i eth0', 'tcpdump -i any \'port 443\''],
+              tip: 'Requer root ou sudo. Use -i any para monitorar todas as interfaces.' },
+            { id: 36, name: 'nmcli', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'cyan', admin: true,
+              whatItDoes: 'Gerencia interfaces de rede, conexões Wi-Fi e configurações IP pelo NetworkManager no Linux.',
+              syntax: ['nmcli device status', 'nmcli connection show'],
+              examples: ['nmcli device status', 'nmcli connection show'],
+              tip: 'Útil para verificar se a placa física está conectada ou desconectada.' },
+            { id: 37, name: 'ethtool', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'olive', admin: true,
+              whatItDoes: 'Mostra velocidade negociada da placa (1Gbps/10Gbps), duplex e se há link físico no cabo de rede.',
+              syntax: ['ethtool <interface>'],
+              examples: ['ethtool eth0'],
+              tip: 'Cheque "Link detected: yes" para confirmar conexão física com o switch.' },
+            { id: 38, name: 'whois', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'lime', admin: false,
+              whatItDoes: 'Consulta dados públicos de registro de domínios, servidores DNS autoritativos (NS) e blocos de IP.',
+              syntax: ['whois <dominio_ou_IP>'],
+              examples: ['whois google.com', 'whois 8.8.8.8'],
+              tip: 'Ajuda a identificar expiração de domínio ou operadora dona de um IP.' },
+            { id: 39, name: 'ufw / iptables', category: 'nivel2-linux', categoryLabel: 'Linux', color: 'red', admin: true,
+              whatItDoes: 'Exibe regras ativas do firewall no Linux para confirmar se portas estão liberadas ou bloqueadas.',
+              syntax: ['sudo ufw status verbose', 'sudo iptables -L -n -v'],
+              examples: ['sudo ufw status verbose', 'sudo iptables -L -n -v'],
+              tip: 'Verifique antes de assumir que um bloqueio vem da rede externa.' }
+        ];
 
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                html.classList.add('light');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-moon';
-                if (themeText) themeText.textContent = 'Modo Escuro';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-moon';
-                if (themeTextMobile) themeTextMobile.textContent = 'Modo Escuro';
-            } else {
-                html.classList.remove('light');
-                html.classList.add('dark');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-sun';
-                if (themeText) themeText.textContent = 'Modo Claro';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-sun';
-                if (themeTextMobile) themeTextMobile.textContent = 'Modo Claro';
-            }
-        }
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let toastTimeout = null;
 
-        // Show Toast Notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMessage');
-            toastMsg.textContent = message;
-            
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 2500);
-        }
-
-        // Copy Code from Code Blocks
-        function copyCode(button) {
-            const container = button.parentElement;
-            const pre = container.querySelector('pre');
-            if (!pre) return;
-
-            const textToCopy = pre.innerText;
-            copyToClipboard(textToCopy);
-        }
-
-        // Copy Text Direct Function
-        function copyText(text) {
-            copyToClipboard(text);
-        }
-
-        // Standardized Clipboard function using execCommand fallback for iFrame compatibility
         function copyToClipboard(text) {
+            if (!text) return;
             const textarea = document.createElement('textarea');
             textarea.value = text;
             textarea.style.position = 'fixed';
             textarea.style.opacity = '0';
             document.body.appendChild(textarea);
             textarea.select();
-            
             try {
                 document.execCommand('copy');
-                showToast('Comando copiado para a área de transferência!');
+                showToast('Copiado: ' + text);
             } catch (err) {
-                console.error('Erro ao copiar texto: ', err);
+                showToast('Não foi possível copiar.');
+            } finally {
+                document.body.removeChild(textarea);
             }
-            
-            document.body.removeChild(textarea);
         }
 
-        // Native Share Web API
-        function sharePage() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Manual Wi-Fi & PowerShell - Diagnóstico Completo',
-                    text: 'Guia completo de diagnóstico de rede sem fio e comandos PowerShell.',
-                    url: window.location.href,
-                }).catch((error) => console.log('Erro ao compartilhar:', error));
-            } else {
-                copyToClipboard(window.location.href);
-                showToast('Link da página copiado para a área de transferência!');
-            }
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            if (!toast || !toastMsg) return;
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2400);
         }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderCommands() {
+            const grid = document.getElementById('commands-grid');
+            const emptyState = document.getElementById('empty-state');
+            const resultsCount = document.getElementById('results-count');
+            if (!grid) return;
+
+            const filtered = commandsData.filter(cmd => {
+                if (currentFilter === 'admin' && !cmd.admin) return false;
+                if (currentFilter !== 'all' && currentFilter !== 'admin' && cmd.category !== currentFilter) return false;
+
+                if (searchQuery.trim() !== '') {
+                    const q = searchQuery.toLowerCase();
+                    return (
+                        cmd.name.toLowerCase().includes(q) ||
+                        cmd.whatItDoes.toLowerCase().includes(q) ||
+                        cmd.tip.toLowerCase().includes(q) ||
+                        cmd.categoryLabel.toLowerCase().includes(q) ||
+                        cmd.syntax.some(s => s.toLowerCase().includes(q)) ||
+                        cmd.examples.some(e => e.toLowerCase().includes(q))
+                    );
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                resultsCount.textContent = '0 comandos encontrados';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            resultsCount.textContent = `Exibindo ${filtered.length} de ${commandsData.length} comandos`;
+
+            grid.innerHTML = filtered.map(cmd => {
+                const style = colorStyles[cmd.color] || colorStyles.blue;
+                return `
+                <article class="card-night-market flex flex-col bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 border-t-4 ${style.border} shadow-sm hover:border-lagoon transition overflow-hidden">
+                    <div class="p-5 pb-3">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase ${style.badge}">
+                                ${escapeHtml(cmd.categoryLabel)}
+                            </span>
+                            ${cmd.admin ? `
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rust/15 text-rust dark:bg-rust/30 dark:text-goldglow border border-rust/40">
+                                    <i data-lucide="shield-alert" class="w-3 h-3"></i> Admin/Root
+                                </span>
+                            ` : ''}
+                        </div>
+                        <h3 class="text-lg font-bold font-mono text-deepsea dark:text-goldglow">
+                            <span class="text-rust dark:text-lagoon font-sans text-xs font-semibold mr-1">#${cmd.id}</span>${escapeHtml(cmd.name)}
+                        </h3>
+                    </div>
+
+                    <div class="px-5 flex-grow flex flex-col gap-3.5">
+                        <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                            ${escapeHtml(cmd.whatItDoes)}
+                        </p>
+
+                        <div>
+                            <span class="block text-[11px] font-bold uppercase tracking-wider text-deepsea/70 dark:text-lagoon mb-1">Sintaxe</span>
+                            <div class="bg-slate-100 dark:bg-abyss rounded-xl p-2.5 border border-deepsea/15 dark:border-deepsea/70 space-y-1 overflow-x-auto">
+                                ${cmd.syntax.map(line => `<div class="font-mono text-xs text-deepsea dark:text-slate-200 whitespace-pre">${escapeHtml(line)}</div>`).join('')}
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="block text-[11px] font-bold uppercase tracking-wider text-deepsea/70 dark:text-lagoon mb-1">Exemplos (clique para copiar)</span>
+                            <div class="space-y-1.5">
+                                ${cmd.examples.map(ex => `
+                                    <button type="button" data-cmd="${escapeHtml(ex)}" onclick="copyToClipboard(this.getAttribute('data-cmd'))"
+                                        class="w-full group flex items-center justify-between gap-2 text-left bg-abyss hover:bg-[#002836] text-goldglow px-3 py-2 rounded-xl border border-deepsea/60 hover:border-goldglow transition">
+                                        <code class="font-mono text-xs break-all"><span class="text-lagoon mr-1">$</span>${escapeHtml(ex)}</code>
+                                        <i data-lucide="copy" class="w-3.5 h-3.5 shrink-0 text-lagoon group-hover:text-goldglow"></i>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 px-5 py-3 bg-deepsea/5 dark:bg-deepsea/25 border-t border-deepsea/15 dark:border-deepsea/60 flex items-start gap-2">
+                        <i data-lucide="lightbulb" class="w-4 h-4 text-rust dark:text-goldglow shrink-0 mt-0.5"></i>
+                        <p class="text-xs text-slate-700 dark:text-slate-300">${escapeHtml(cmd.tip)}</p>
+                    </div>
+                </article>
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCommands();
+            if (window.lucide) lucide.createIcons();
+
+            // Navegação por Abas
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabButtons.forEach(b => {
+                        b.classList.remove('active', 'bg-goldglow', 'text-abyss', 'shadow-amber-glow', 'font-bold');
+                        b.classList.add('bg-slate-100', 'dark:bg-deepsea/30', 'text-deepsea', 'dark:text-slate-200', 'font-semibold');
+                    });
+                    btn.classList.add('active', 'bg-goldglow', 'text-abyss', 'shadow-amber-glow', 'font-bold');
+                    btn.classList.remove('bg-slate-100', 'dark:bg-deepsea/30', 'text-deepsea', 'dark:text-slate-200', 'font-semibold');
+
+                    const targetId = btn.dataset.tab;
+                    tabPanels.forEach(panel => {
+                        if (panel.id === targetId) {
+                            panel.classList.remove('hidden');
+                            panel.classList.add('block');
+                        } else {
+                            panel.classList.add('hidden');
+                            panel.classList.remove('block');
+                        }
+                    });
+                });
+            });
+
+            // Filtros por Sistema
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => {
+                        b.classList.remove('active', 'bg-deepsea', 'text-white', 'dark:bg-lagoon', 'dark:text-abyss', 'font-bold');
+                        b.classList.add('bg-slate-100', 'dark:bg-abyss', 'text-deepsea', 'dark:text-slate-300', 'font-semibold');
+                    });
+                    btn.classList.add('active', 'bg-deepsea', 'text-white', 'dark:bg-lagoon', 'dark:text-abyss', 'font-bold');
+                    btn.classList.remove('bg-slate-100', 'dark:bg-abyss', 'text-deepsea', 'dark:text-slate-300', 'font-semibold');
+                    currentFilter = btn.dataset.filter;
+                    renderCommands();
+                });
+            });
+
+            // Busca
+            const searchInput = document.getElementById('search-input');
+            const clearSearchBtn = document.getElementById('clear-search');
+            if (searchInput && clearSearchBtn) {
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value;
+                    clearSearchBtn.classList.toggle('hidden', searchQuery.length === 0);
+                    renderCommands();
+                });
+                clearSearchBtn.addEventListener('click', () => {
+                    searchInput.value = '';
+                    searchQuery = '';
+                    clearSearchBtn.classList.add('hidden');
+                    renderCommands();
+                    searchInput.focus();
+                });
+            }
+
+            // Reset
+            const resetBtn = document.getElementById('reset-filters-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    searchQuery = '';
+                    if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+                    const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+                    if (allBtn) allBtn.click();
+                });
+            }
+
+            // Tema Claro/Escuro
+            const themeToggle = document.getElementById('theme-toggle');
+            if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.classList.remove('dark');
+            }
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                });
+            }
+        });
     </script>
 </body>
 </html>

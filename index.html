@@ -33,6 +33,11 @@
         }
     </script>
     <style>
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
         .text-glow-amber {
             text-shadow: 0 0 18px rgba(238, 155, 0, 0.45), 0 0 4px rgba(202, 103, 2, 0.6);
         }
@@ -46,35 +51,36 @@
         }
     </style>
 </head>
-<body class="bg-[#F4F7F8] text-[#001219] dark:bg-abyss dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+<body class="bg-[#F4F7F8] text-[#001219] dark:bg-abyss dark:text-slate-100 transition-colors duration-200">
 
     <!-- Toast de Cópia -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2 bg-abyss dark:bg-lagoon text-white border border-goldglow/50 px-4 py-3 rounded-xl shadow-amber-glow font-medium text-sm">
-        <i data-lucide="check-circle-2" class="w-5 h-5 text-goldglow dark:text-abyss"></i>
-        <span id="toast-msg">Copiado!</span>
+    <div id="toast" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-center sm:justify-start gap-2 bg-abyss dark:bg-lagoon text-white border border-goldglow/50 px-4 py-3 rounded-xl shadow-amber-glow font-medium text-sm">
+        <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0 text-goldglow dark:text-abyss"></i>
+        <span id="toast-msg" class="truncate">Copiado!</span>
     </div>
 
-    <!-- Cabeçalho Limpo com Abas de Navegação -->
-    <header class="bg-white dark:bg-abyss border-b border-deepsea/20 dark:border-deepsea/60">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3 text-center sm:text-left">
-                    <div class="p-2.5 bg-gradient-to-br from-rust to-goldglow text-abyss rounded-xl shadow-amber-glow">
-                        <i data-lucide="terminal" class="w-6 h-6 stroke-[2.25]"></i>
+    <!-- Cabeçalho Alinhado -->
+    <header class="relative w-full bg-white dark:bg-abyss border-b border-deepsea/20 dark:border-deepsea/60">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left">
+                <!-- Título e Subtítulo -->
+                <div class="flex items-center justify-center sm:justify-start gap-3">
+                    <div class="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl bg-deepsea/10 dark:bg-deepsea/40 text-deepsea dark:text-goldglow border border-deepsea/20 dark:border-deepsea">
+                        <i data-lucide="terminal" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-extrabold uppercase text-deepsea dark:text-goldglow dark:text-glow-amber">
+                        <h1 class="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-deepsea dark:text-goldglow dark:text-glow-amber">
                             Diagnóstico de Rede
                         </h1>
-                        <p class="text-xs font-medium text-rust dark:text-lagoon">
+                        <p class="text-xs font-medium text-rust dark:text-lagoon mt-0.5">
                             Windows CMD • PowerShell • Linux
                         </p>
                     </div>
                 </div>
 
                 <!-- Controles Rápidos -->
-                <div class="flex items-center gap-2 no-print">
-                    <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-lagoon border border-deepsea/20 dark:border-deepsea text-xs font-semibold hover:border-goldglow transition">
+                <div class="flex items-center justify-center gap-2 no-print">
+                    <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-lagoon border border-deepsea/20 dark:border-deepsea text-xs font-semibold hover:border-goldglow transition">
                         <i data-lucide="printer" class="w-4 h-4"></i>
                         <span>PDF / Imprimir</span>
                     </button>
@@ -85,36 +91,36 @@
                 </div>
             </div>
 
-            <!-- Menu Principal por Abas (Separa o conteúdo para não confundir) -->
-            <nav class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-5 pt-4 border-t border-deepsea/10 dark:border-deepsea/40 no-print">
-                <button type="button" data-tab="tab-comandos" class="tab-btn active inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-goldglow text-abyss shadow-amber-glow transition">
-                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                    <span>1. Comandos (39)</span>
+            <!-- Menu Principal por Abas -->
+            <nav class="grid grid-cols-3 sm:flex sm:flex-wrap items-center justify-center sm:justify-start gap-2 mt-4 pt-4 border-t border-deepsea/10 dark:border-deepsea/40 no-print">
+                <button type="button" data-tab="tab-comandos" class="tab-btn active inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-goldglow text-abyss shadow-amber-glow transition">
+                    <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 hidden sm:inline"></i>
+                    <span>Comandos</span>
                 </button>
-                <button type="button" data-tab="tab-checklist" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
-                    <i data-lucide="list-checks" class="w-4 h-4"></i>
-                    <span>2. Passo a Passo</span>
+                <button type="button" data-tab="tab-checklist" class="tab-btn inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
+                    <i data-lucide="list-checks" class="w-4 h-4 shrink-0 hidden sm:inline"></i>
+                    <span>Passo a Passo</span>
                 </button>
-                <button type="button" data-tab="tab-tabela" class="tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
-                    <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
-                    <span>3. Tabela Comparativa</span>
+                <button type="button" data-tab="tab-tabela" class="tab-btn inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-deepsea/30 text-deepsea dark:text-slate-200 border border-deepsea/15 dark:border-deepsea/60 hover:border-lagoon transition">
+                    <i data-lucide="arrow-left-right" class="w-4 h-4 shrink-0 hidden sm:inline"></i>
+                    <span>Tabela</span>
                 </button>
             </nav>
         </div>
     </header>
 
     <!-- Conteúdo Principal -->
-    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6">
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-6">
 
         <!-- ========================================================= -->
-        <!-- ABA 1: LISTA DE COMANDOS (LIMPA E DIRETA)                 -->
+        <!-- ABA 1: LISTA DE COMANDOS                                  -->
         <!-- ========================================================= -->
         <section id="tab-comandos" class="tab-panel block">
             
             <!-- Barra de Busca + Filtro Único por Sistema -->
-            <div class="bg-white dark:bg-[#001D27] p-4 rounded-2xl border border-deepsea/20 dark:border-deepsea/70 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 no-print">
+            <div class="bg-white dark:bg-[#001D27] p-4 rounded-2xl border border-deepsea/20 dark:border-deepsea/70 mb-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5 no-print">
                 <!-- Busca -->
-                <div class="relative w-full md:w-80">
+                <div class="relative w-full lg:w-80 shrink-0">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-deepsea dark:text-lagoon"></i>
                     <input type="text" id="search-input" placeholder="Buscar comando (ex: ping, dns, porta)..." 
                         class="w-full pl-10 pr-8 py-2.5 text-sm bg-slate-100 dark:bg-abyss border border-deepsea/20 dark:border-deepsea focus:border-goldglow rounded-xl outline-none text-abyss dark:text-white placeholder-slate-400">
@@ -124,7 +130,7 @@
                 </div>
 
                 <!-- Filtro Simples por Sistema -->
-                <div class="flex flex-wrap items-center justify-center gap-1.5" id="system-filters">
+                <div class="flex flex-wrap items-center justify-center lg:justify-end gap-1.5" id="system-filters">
                     <button type="button" data-filter="all" class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-deepsea text-white dark:bg-lagoon dark:text-abyss transition">
                         Todos
                     </button>
@@ -146,16 +152,16 @@
                 </div>
             </div>
 
-            <!-- Contador Discreto -->
-            <div class="flex items-center justify-between mb-4 px-1">
+            <!-- Contador Alinhado -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left mb-4 px-1">
                 <p id="results-count" class="text-xs font-semibold uppercase tracking-wider text-deepsea dark:text-lagoon">
                     Exibindo 39 comandos
                 </p>
                 <span class="text-xs text-slate-500 dark:text-slate-400">Clique em qualquer exemplo para copiar</span>
             </div>
 
-            <!-- Grid de Comandos (Todos visíveis de forma direta e organizada) -->
-            <div id="commands-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Grid de Comandos -->
+            <div id="commands-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
                 <!-- Preenchido via JS -->
             </div>
 
@@ -173,8 +179,8 @@
         <!-- ABA 2: PASSO A PASSO DE DIAGNÓSTICO (CHECKLIST)           -->
         <!-- ========================================================= -->
         <section id="tab-checklist" class="tab-panel hidden">
-            <div class="max-w-3xl mx-auto bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-6 shadow-sm">
-                <div class="mb-6">
+            <div class="max-w-3xl mx-auto bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-5 sm:p-6 shadow-sm">
+                <div class="mb-6 text-center sm:text-left">
                     <h2 class="text-lg font-extrabold uppercase text-deepsea dark:text-goldglow">
                         Ordem Lógica para Resolver Falhas de Rede
                     </h2>
@@ -189,7 +195,7 @@
                             <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 1 • Placa de Rede Local</span>
                             <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Testa se o protocolo TCP/IP do próprio computador está funcionando.</p>
                         </div>
-                        <button type="button" data-cmd="ping 127.0.0.1" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                        <button type="button" data-cmd="ping 127.0.0.1" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
                             <span>$ ping 127.0.0.1</span>
                             <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
                         </button>
@@ -200,7 +206,7 @@
                             <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 2 • Endereço IP e Gateway</span>
                             <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Verifica se a máquina recebeu IP válido e qual é o IP do roteador (Gateway).</p>
                         </div>
-                        <button type="button" data-cmd="ipconfig /all" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                        <button type="button" data-cmd="ipconfig /all" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
                             <span>$ ipconfig /all</span>
                             <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
                         </button>
@@ -211,7 +217,7 @@
                             <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 3 • Acesso à Internet (por IP)</span>
                             <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Testa a saída para a internet sem depender de nomes de sites (DNS).</p>
                         </div>
-                        <button type="button" data-cmd="ping 8.8.8.8" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                        <button type="button" data-cmd="ping 8.8.8.8" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
                             <span>$ ping 8.8.8.8</span>
                             <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
                         </button>
@@ -222,7 +228,7 @@
                             <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 4 • Resolução de Nomes (DNS)</span>
                             <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Se o Passo 3 funcionou mas sites não abrem, o problema está no DNS.</p>
                         </div>
-                        <button type="button" data-cmd="nslookup google.com" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                        <button type="button" data-cmd="nslookup google.com" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
                             <span>$ nslookup google.com</span>
                             <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
                         </button>
@@ -233,7 +239,7 @@
                             <span class="text-xs font-bold uppercase text-rust dark:text-goldglow">Passo 5 • Porta e Firewall</span>
                             <p class="text-sm text-slate-700 dark:text-slate-200 mt-0.5">Confirma se a porta específica do serviço (ex: 443 HTTPS ou 3389 RDP) está liberada.</p>
                         </div>
-                        <button type="button" data-cmd="Test-NetConnection -ComputerName google.com -Port 443" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
+                        <button type="button" data-cmd="Test-NetConnection -ComputerName google.com -Port 443" onclick="copyToClipboard(this.getAttribute('data-cmd'))" class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 font-mono text-xs px-3.5 py-2.5 rounded-xl bg-abyss dark:bg-deepsea/40 text-goldglow border border-deepsea hover:border-goldglow transition">
                             <span>$ Test-NetConnection :443</span>
                             <i data-lucide="copy" class="w-3.5 h-3.5 text-lagoon"></i>
                         </button>
@@ -248,39 +254,39 @@
         <section id="tab-tabela" class="tab-panel hidden">
             <div class="max-w-4xl mx-auto space-y-6">
                 <!-- Tabela Multiplataforma -->
-                <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-6 shadow-sm">
-                    <h2 class="text-lg font-extrabold uppercase text-deepsea dark:text-goldglow mb-1">
+                <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-5 sm:p-6 shadow-sm">
+                    <h2 class="text-lg font-extrabold uppercase text-deepsea dark:text-goldglow mb-1 text-center sm:text-left">
                         Equivalência: Windows CMD × PowerShell × Linux
                     </h2>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 mb-4">
+                    <p class="text-xs text-slate-600 dark:text-slate-300 mb-4 text-center sm:text-left">
                         Consulte rapidamente qual comando usar em cada sistema operacional para a mesma tarefa.
                     </p>
                     <div class="overflow-x-auto rounded-xl border border-deepsea/20 dark:border-deepsea/70">
                         <table class="w-full text-xs text-left">
                             <thead class="bg-slate-100 dark:bg-abyss text-deepsea dark:text-goldglow uppercase font-bold">
                                 <tr>
-                                    <th class="px-4 py-3">Função</th>
-                                    <th class="px-4 py-3">Windows CMD</th>
-                                    <th class="px-4 py-3">PowerShell</th>
-                                    <th class="px-4 py-3">Linux</th>
+                                    <th class="px-4 py-3 whitespace-nowrap">Função</th>
+                                    <th class="px-4 py-3 whitespace-nowrap">Windows CMD</th>
+                                    <th class="px-4 py-3 whitespace-nowrap">PowerShell</th>
+                                    <th class="px-4 py-3 whitespace-nowrap">Linux</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-deepsea/10 dark:divide-deepsea/50 font-mono text-slate-700 dark:text-slate-200">
-                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Ver IP e Placas</td><td class="px-4 py-2.5">ipconfig /all</td><td class="px-4 py-2.5">Get-NetIPConfiguration</td><td class="px-4 py-2.5">ip a</td></tr>
-                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Portas e Conexões</td><td class="px-4 py-2.5">netstat -ano</td><td class="px-4 py-2.5">Get-NetTCPConnection</td><td class="px-4 py-2.5">ss -tunap</td></tr>
-                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Testar Porta TCP</td><td class="px-4 py-2.5">telnet host porta</td><td class="px-4 py-2.5">Test-NetConnection -Port</td><td class="px-4 py-2.5">nc -zv host porta</td></tr>
-                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Consultar DNS</td><td class="px-4 py-2.5">nslookup</td><td class="px-4 py-2.5">Resolve-DnsName</td><td class="px-4 py-2.5">dig</td></tr>
-                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Rastrear Rota</td><td class="px-4 py-2.5">tracert / pathping</td><td class="px-4 py-2.5">Test-NetConnection -TraceRoute</td><td class="px-4 py-2.5">traceroute / mtr</td></tr>
-                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Tabela ARP (IP/MAC)</td><td class="px-4 py-2.5">arp -a</td><td class="px-4 py-2.5">Get-NetNeighbor</td><td class="px-4 py-2.5">ip neigh</td></tr>
-                                <tr><td class="px-4 py-2.5 font-sans font-semibold">Tabela de Rotas</td><td class="px-4 py-2.5">route print</td><td class="px-4 py-2.5">Get-NetRoute</td><td class="px-4 py-2.5">ip route show</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold whitespace-nowrap">Ver IP e Placas</td><td class="px-4 py-2.5 whitespace-nowrap">ipconfig /all</td><td class="px-4 py-2.5 whitespace-nowrap">Get-NetIPConfiguration</td><td class="px-4 py-2.5 whitespace-nowrap">ip a</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold whitespace-nowrap">Portas e Conexões</td><td class="px-4 py-2.5 whitespace-nowrap">netstat -ano</td><td class="px-4 py-2.5 whitespace-nowrap">Get-NetTCPConnection</td><td class="px-4 py-2.5 whitespace-nowrap">ss -tunap</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold whitespace-nowrap">Testar Porta TCP</td><td class="px-4 py-2.5 whitespace-nowrap">telnet host porta</td><td class="px-4 py-2.5 whitespace-nowrap">Test-NetConnection -Port</td><td class="px-4 py-2.5 whitespace-nowrap">nc -zv host porta</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold whitespace-nowrap">Consultar DNS</td><td class="px-4 py-2.5 whitespace-nowrap">nslookup</td><td class="px-4 py-2.5 whitespace-nowrap">Resolve-DnsName</td><td class="px-4 py-2.5 whitespace-nowrap">dig</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold whitespace-nowrap">Rastrear Rota</td><td class="px-4 py-2.5 whitespace-nowrap">tracert / pathping</td><td class="px-4 py-2.5 whitespace-nowrap">Test-NetConnection -TraceRoute</td><td class="px-4 py-2.5 whitespace-nowrap">traceroute / mtr</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold whitespace-nowrap">Tabela ARP (IP/MAC)</td><td class="px-4 py-2.5 whitespace-nowrap">arp -a</td><td class="px-4 py-2.5 whitespace-nowrap">Get-NetNeighbor</td><td class="px-4 py-2.5 whitespace-nowrap">ip neigh</td></tr>
+                                <tr><td class="px-4 py-2.5 font-sans font-semibold whitespace-nowrap">Tabela de Rotas</td><td class="px-4 py-2.5 whitespace-nowrap">route print</td><td class="px-4 py-2.5 whitespace-nowrap">Get-NetRoute</td><td class="px-4 py-2.5 whitespace-nowrap">ip route show</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <!-- Cola Rápida de Portas -->
-                <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-6 shadow-sm">
-                    <h3 class="text-sm font-extrabold uppercase text-deepsea dark:text-goldglow mb-3">
+                <div class="bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 p-5 sm:p-6 shadow-sm">
+                    <h3 class="text-sm font-extrabold uppercase text-deepsea dark:text-goldglow mb-3 text-center sm:text-left">
                         Portas Mais Testadas no Dia a Dia
                     </h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 text-center">
@@ -319,7 +325,7 @@
     <footer class="bg-white dark:bg-abyss border-t border-deepsea/20 dark:border-deepsea/60 py-5 mt-10">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs">
             <p class="text-rust dark:text-goldglow font-semibold">Guia de Referência Rápida para Diagnóstico de Redes (Windows CMD, PowerShell e Linux).</p>
-            <p class="flex items-center gap-1.5 text-rust dark:text-goldglow font-semibold">
+            <p class="flex items-center justify-center sm:justify-end gap-1.5 text-rust dark:text-goldglow font-semibold shrink-0">
                 <i data-lucide="shield-check" class="w-4 h-4 text-lagoon"></i>
                 ALEXANDER
             </p>
@@ -570,12 +576,12 @@
             const toastMsg = document.getElementById('toast-msg');
             if (!toast || !toastMsg) return;
             toastMsg.textContent = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.remove('translate-y-24', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
             if (toastTimeout) clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.add('translate-y-24', 'opacity-0');
             }, 2400);
         }
 
@@ -625,19 +631,19 @@
             grid.innerHTML = filtered.map(cmd => {
                 const style = colorStyles[cmd.color] || colorStyles.blue;
                 return `
-                <article class="card-night-market flex flex-col bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 border-t-4 ${style.border} shadow-sm hover:border-lagoon transition overflow-hidden">
+                <article class="card-night-market h-full flex flex-col bg-white dark:bg-[#001D27] rounded-2xl border border-deepsea/20 dark:border-deepsea/80 border-t-4 ${style.border} shadow-sm hover:border-lagoon transition overflow-hidden">
                     <div class="p-5 pb-3">
                         <div class="flex items-center justify-between gap-2 mb-2">
                             <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase ${style.badge}">
                                 ${escapeHtml(cmd.categoryLabel)}
                             </span>
                             ${cmd.admin ? `
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rust/15 text-rust dark:bg-rust/30 dark:text-goldglow border border-rust/40">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rust/15 text-rust dark:bg-rust/30 dark:text-goldglow border border-rust/40 shrink-0">
                                     <i data-lucide="shield-alert" class="w-3 h-3"></i> Admin/Root
                                 </span>
                             ` : ''}
                         </div>
-                        <h3 class="text-lg font-bold font-mono text-deepsea dark:text-goldglow">
+                        <h3 class="text-lg font-bold font-mono text-deepsea dark:text-goldglow break-words">
                             <span class="text-rust dark:text-lagoon font-sans text-xs font-semibold mr-1">#${cmd.id}</span>${escapeHtml(cmd.name)}
                         </h3>
                     </div>
@@ -654,7 +660,7 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div class="mt-auto">
                             <span class="block text-[11px] font-bold uppercase tracking-wider text-deepsea/70 dark:text-lagoon mb-1">Exemplos (clique para copiar)</span>
                             <div class="space-y-1.5">
                                 ${cmd.examples.map(ex => `
@@ -670,7 +676,7 @@
 
                     <div class="mt-4 px-5 py-3 bg-deepsea/5 dark:bg-deepsea/25 border-t border-deepsea/15 dark:border-deepsea/60 flex items-start gap-2">
                         <i data-lucide="lightbulb" class="w-4 h-4 text-rust dark:text-goldglow shrink-0 mt-0.5"></i>
-                        <p class="text-xs text-slate-700 dark:text-slate-300">${escapeHtml(cmd.tip)}</p>
+                        <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${escapeHtml(cmd.tip)}</p>
                     </div>
                 </article>
                 `;
